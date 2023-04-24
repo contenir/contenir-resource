@@ -1,21 +1,27 @@
 <?php
 
-namespace Application\Service\Manager\Factory;
+namespace Contenir\Resource;
 
-use Application\Repository\ResourceRepository;
-use Application\Repository\ResourceCollectionRepository;
-use Application\Repository\ResourceTypeRepository;
+use Contenir\Resource\Model\Repository\BaseResourceRepository;
+use Contenir\Resource\Model\Repository\BaseResourceCollectionRepository;
+use Contenir\Resource\Model\Repository\BaseResourceTypeRepository;
 use Application\Service\Manager\ResourceManager;
 use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use RuntimeException;
 
 class ResourceManagerFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $resourceRepository = $container->get(ResourceRepository::class);
-        $resourceCollectionRepository = $container->get(ResourceCollectionRepository::class);
-        $resourceTypeRepository = $container->get(ResourceTypeRepository::class);
+        $config = $container->get('config')['resource'] ?? [];
+        if (empty($config)) {
+            throw new RuntimeException('No resource config provided');
+        }
+
+        $resourceRepository           = $container->get($config['repository']['resource']);
+        $resourceCollectionRepository = $container->get($config['repository']['resource_collection']);
+        $resourceTypeRepository       = $container->get($config['repository']['resource_type']);
 
         return new ResourceManager(
             $resourceRepository,

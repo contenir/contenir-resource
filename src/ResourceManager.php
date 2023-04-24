@@ -1,47 +1,46 @@
 <?php
 
-namespace Application\Service\Manager;
+namespace Contenir\Resource;
 
-use Application\Entity\ResourceEntity;
-use Application\Entity\ResourceCollectionEntity;
-use Application\Entity\ResourceTypeEntity;
-use Application\Repository\ResourceRepository;
-use Application\Repository\ResourceCollectionRepository;
-use Application\Repository\ResourceTypeRepository;
-use Laminas\Db\Sql;
+use Contenir\Resource\Model\Entity\BaseResourceEntity;
+use Contenir\Resource\Model\Entity\BaseResourceCollectionEntity;
+use Contenir\Resource\Model\Entity\BaseResourceTypeEntity;
+use Contenir\Resource\Model\Repository\BaseResourceRepository;
+use Contenir\Resource\Model\Repository\BaseResourceCollectionRepository;
+use Contenir\Resource\Model\Repository\BaseResourceTypeRepository;
 
 /**
  * The AuthManager service is responsible for user's login/logout and simple access
  * filtering. The access filtering feature checks whether the current visitor
  * is allowed to see the given page or not.
  */
-class ResourceManager
+abstract class ResourceManager
 {
     /**
      * User Repository
      * @var \Application\Repository\ResourceRepository
      */
-    private $resourceRepository;
+    protected $resourceRepository;
 
     /**
      * User Repository
      * @var \Application\Repository\ResourceCollectionRepository
      */
-    private $resourceCollectionRepository;
+    protected $resourceCollectionRepository;
 
     /**
      * User Repository
      * @var \Application\Repository\ResourceTypeRepository
      */
-    private $resourceTypeRepository;
+    protected $resourceTypeRepository;
 
     /**
      * Constructs the service.
      */
     public function __construct(
-        ResourceRepository $resourceRepository,
-        ResourceCollectionRepository $resourceCollectionRepository,
-        ResourceTypeRepository $resourceTypeRepository
+        BaseResourceRepository $resourceRepository,
+        BaseResourceCollectionRepository $resourceCollectionRepository,
+        BaseResourceTypeRepository $resourceTypeRepository
     ) {
         $this->resourceRepository           = $resourceRepository;
         $this->resourceCollectionRepository = $resourceCollectionRepository;
@@ -62,49 +61,20 @@ class ResourceManager
         return $this->resourceRepository->findOne($where);
     }
 
-    public function findPage($slug)
+    public function findByType($resourceTypeId)
     {
-        return $this->resourceRepository->findOne([
-            'resource_type_id' => 'page',
-            'slug'             => $slug
+        return $this->resourceRepository->find([
+            'resource_type_id' => $resourceTypeId
         ]);
     }
 
-    public function findCollections(
-        $resourceTypeId,
-        $slug = null
-    ) {
-        $faqs  = [];
-        $where = [
-            'resource_type_id' => $resourceTypeId
-        ];
-        if ($slug) {
-            $where['slug'] = $slug;
-        }
-
-        $resourceCollections = $this->resourceCollectionRepository->find($where);
-
-        foreach ($resourceCollections as $resourceCollection) {
-            $select = $this->resourceRepository->select()
-                ->join(
-                    'lookup_resource_collection',
-                    'lookup_resource_collection.resource_id = resource.resource_id',
-                    []
-                )
-                ->where([
-                    'lookup_resource_collection.resource_collection_id' => $resourceCollection->resource_collection_id
-                ])
-                ->order([
-                    'resource.sequence ASC'
-                ]);
-
-            $resources                                         = $this->resourceRepository->find(null, null, $select);
-            $faqs[$resourceCollection->resource_collection_id] = [
-                'collection' => $resourceCollection,
-                'resources'  => $resources
-            ];
-        }
-
-        return $faqs;
+    public function findActivePageByWorkflow($workflow)
+    {
+        return $this->resourceRepository->findOne([
+            'resource_type_id' => 'page',
+            'workflow'         => $workflow,
+            'active'           => 'active',
+            'visible'          => 1
+        ]);
     }
 }
