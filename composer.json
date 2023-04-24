@@ -18,7 +18,7 @@
     },
     "extra": {
         "laminas": {
-            "component": "Contenir\\Resource",
+            "component": "Contenir\\Resource"
         }
     },
     "require": {
