@@ -2,9 +2,6 @@
 
 namespace Contenir\Resource;
 
-use Contenir\Resource\Model\Entity\BaseResourceEntity;
-use Contenir\Resource\Model\Entity\BaseResourceCollectionEntity;
-use Contenir\Resource\Model\Entity\BaseResourceTypeEntity;
 use Contenir\Resource\Model\Repository\BaseResourceRepository;
 use Contenir\Resource\Model\Repository\BaseResourceCollectionRepository;
 use Contenir\Resource\Model\Repository\BaseResourceTypeRepository;
@@ -14,7 +11,7 @@ use Contenir\Resource\Model\Repository\BaseResourceTypeRepository;
  * filtering. The access filtering feature checks whether the current visitor
  * is allowed to see the given page or not.
  */
-abstract class ResourceManager
+class ResourceManager
 {
     /**
      * User Repository

@@ -2,7 +2,7 @@
 
 namespace Contenir\Resource\View\Helper;
 
-use Application\Service\Manager\ResourceManager;
+use Contenir\Resource\ResourceManager;
 use Laminas\View\Helper\AbstractHelper;
 
 class Resource extends AbstractHelper

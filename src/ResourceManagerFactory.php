@@ -2,10 +2,7 @@
 
 namespace Contenir\Resource;
 
-use Contenir\Resource\Model\Repository\BaseResourceRepository;
-use Contenir\Resource\Model\Repository\BaseResourceCollectionRepository;
-use Contenir\Resource\Model\Repository\BaseResourceTypeRepository;
-use Application\Service\Manager\ResourceManager;
+use Contenir\Resource\ResourceManager;
 use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use RuntimeException;
