@@ -24,6 +24,15 @@ class Module
                     'resource_type'       => Model\Repository\BaseResourceTypeRepository::class,
                 ]
             ],
+            'controller_plugins' => [
+                'aliases' => [
+                    'resource' => Controller\Plugin\ResourcePlugin::class,
+                    'Resource' => Controller\Plugin\ResourcePlugin::class
+                ],
+                'factories' => [
+                    Controller\Plugin\ResourcePlugin::class => Controller\Plugin\ResourcePluginFactory::class,
+                ]
+            ],
             'service_manager' => [
                 'aliases' => [
                     'resource'            => Model\Repository\BaseResourceRepository::class,
