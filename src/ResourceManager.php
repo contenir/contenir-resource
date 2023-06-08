@@ -5,6 +5,10 @@ namespace Contenir\Resource;
 use Contenir\Resource\Model\Repository\BaseResourceRepository;
 use Contenir\Resource\Model\Repository\BaseResourceCollectionRepository;
 use Contenir\Resource\Model\Repository\BaseResourceTypeRepository;
+use Laminas\Filter\FilterChain;
+use Laminas\Filter\StringToLower;
+use Laminas\Filter\Word\CamelCaseToUnderscore;
+use RuntimeException;
 
 /**
  * The AuthManager service is responsible for user's login/logout and simple access
@@ -31,6 +35,8 @@ class ResourceManager
      */
     protected $resourceTypeRepository;
 
+    protected $fieldFilter;
+
     /**
      * Constructs the service.
      */
@@ -42,6 +48,11 @@ class ResourceManager
         $this->resourceRepository           = $resourceRepository;
         $this->resourceCollectionRepository = $resourceCollectionRepository;
         $this->resourceTypeRepository       = $resourceTypeRepository;
+
+        $this->fieldFilter = new FilterChain();
+        $this->fieldFilter
+            ->attach(new CamelCaseToUnderscore())
+            ->attach(new StringToLower());
     }
 
     public function findOne($resourceId)
@@ -73,5 +84,41 @@ class ResourceManager
             'active'           => 'active',
             'visible'          => 1
         ]);
+    }
+
+    public function findCollectionByType($resourceTypeId)
+    {
+        return $this->resourceCollectionRepository->find([
+            'resource_type_id' => $resourceTypeId,
+            'active'           => 'active'
+        ], [
+            'sequence ASC'
+        ]);
+    }
+
+    public function __call($method, array $args)
+    {
+        $matches = [];
+
+        if (preg_match('/^find(One)(Active)?(\w+?)(?:By(\w+))?$/', $method, $matches)) {
+            $where          = [];
+            $method         = isset($matches[1]) ? 'findOneByField' : 'findByField';
+            $active         = isset($matches[2]) ? 'active' : null;
+            $resourceTypeId = $matches[3];
+            $param          = $matches[4] ?? null;
+
+            if ($active) {
+                $where['active'] = 'active';
+            }
+
+            if ($param) {
+                $field         = $this->fieldFilter->filter($param);
+                $where[$field] = $args[0];
+            }
+
+            return $this->$method('resource_type_id', $resourceTypeId, $where);
+        }
+
+        throw new RuntimeException("Unrecognized method '$method()'");
     }
 }

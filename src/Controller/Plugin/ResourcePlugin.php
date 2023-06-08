@@ -25,11 +25,13 @@ class ResourcePlugin extends AbstractPlugin
             ->attach(new StringToLower());
     }
 
-    public function __invoke($resourceId = null)
+    public function __invoke($resourceId = null, $throwException = true)
     {
         if ($resourceId === null) {
-            return $this;
+            return $this->resourceManager;
         }
+
+        return $this->resource($resourceId, $throwException);
     }
 
     public function resource($resourceId = null, $throwException = true)
@@ -37,35 +39,6 @@ class ResourcePlugin extends AbstractPlugin
         $resource = $this->resourceManager->findOneByField('resource_id', $resourceId);
 
         return $this->handleResult($resource, $throwException);
-    }
-
-    public function __call($method, array $args)
-    {
-        $controller = $this->getController();
-        $matches    = [];
-
-        if (preg_match('/^findOne(Active)?(\w+?)(?:By(\w+))?$/', $method, $matches)) {
-            $where          = [];
-            $active         = isset($matches[1]) ? 'active' : null;
-            $throwException = isset($args[1]) ? (bool) $args[1] : true;
-            $resourceTypeId = $this->filter->filter($matches[2]);
-            $param          = isset($matches[3]) ? $this->filter->filter($matches[3]) : null;
-
-            if ($active) {
-                $where['active'] = 'active';
-            }
-
-            if ($param) {
-                $value         = isset($args[0]) ? $args[0] : $controller->getEvent()->getRouteMatch()->getParam($param);
-                $where[$param] = $value;
-            }
-
-            $resource = $this->resourceManager->findOneByField('resource_type_id', $resourceTypeId, $where);
-
-            return $this->handleResult($resource, $throwException);
-        }
-
-        throw new RuntimeException("Unrecognized method '$method()'");
     }
 
     public function handleResult(AbstractEntity $resource = null, $throwException = true)
