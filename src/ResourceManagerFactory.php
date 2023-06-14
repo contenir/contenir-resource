@@ -20,7 +20,7 @@ class ResourceManagerFactory implements FactoryInterface
         $resourceCollectionRepository = $container->get($config['repository']['resource_collection']);
         $resourceTypeRepository       = $container->get($config['repository']['resource_type']);
 
-        return new ResourceManager(
+        return new $requestedName(
             $resourceRepository,
             $resourceCollectionRepository,
             $resourceTypeRepository
