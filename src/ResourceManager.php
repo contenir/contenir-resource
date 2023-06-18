@@ -62,6 +62,13 @@ class ResourceManager
         ]);
     }
 
+    public function findByField($field, $value, array $where = [])
+    {
+        $where[$field] = $value;
+
+        return $this->resourceRepository->find($where);
+    }
+
     public function findOneByField($field, $value, array $where = [])
     {
         $where[$field] = $value;
@@ -100,10 +107,10 @@ class ResourceManager
     {
         $matches = [];
 
-        if (preg_match('/^find(One)(Active)?(\w+?)(?:By(\w+))?$/', $method, $matches)) {
+        if (preg_match('/^find(One)?(Active)?(\w+?)(?:By(\w+))?$/', $method, $matches)) {
             $where          = [];
-            $method         = isset($matches[1]) ? 'findOneByField' : 'findByField';
-            $active         = isset($matches[2]) ? 'active' : null;
+            $method         = (! empty($matches[1])) ? 'findOneByField' : 'findByField';
+            $active         = (! empty($matches[2])) ? 'active' : null;
             $resourceTypeId = $matches[3];
             $param          = $matches[4] ?? null;
 
