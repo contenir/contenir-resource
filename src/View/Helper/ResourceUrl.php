@@ -2,7 +2,7 @@
 
 namespace Contenir\Resource\View\Helper;
 
-use Contenir\Resource\Model\Entity\BaseResourceEntity;
+use Contenir\Db\Model\Entity\AbstractEntity;
 use Laminas\View\Helper\AbstractHelper;
 
 class ResourceUrl extends AbstractHelper
@@ -11,7 +11,7 @@ class ResourceUrl extends AbstractHelper
     {
         $url = null;
 
-        if ($resourceId instanceof BaseResourceEntity) {
+        if ($resourceId instanceof AbstractEntity) {
             $url = $this->view->Url($resourceId->getRouteId());
         } elseif ($resourceId) {
             $resource = $this->view->Resource($resourceId);
