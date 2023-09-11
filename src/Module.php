@@ -56,12 +56,15 @@ class Module
                     'resourceContent' => Helper\ResourceContent::class,
                     'ResourceContent' => Helper\ResourceContent::class,
                     'resourceMeta'    => Helper\ResourceMeta::class,
-                    'ResourceMeta'    => Helper\ResourceMeta::class
+                    'ResourceMeta'    => Helper\ResourceMeta::class,
+                    'resourceUrl'     => Helper\ResourceUrl::class,
+                    'ResourceUrl'     => Helper\ResourceUrl::class
                 ],
                 'factories' => [
                     Helper\Resource::class        => Helper\ResourceFactory::class,
                     Helper\ResourceContent::class => InvokableFactory::class,
-                    Helper\ResourceMeta::class    => InvokableFactory::class
+                    Helper\ResourceMeta::class    => InvokableFactory::class,
+                    Helper\ResourceUrl::class     => InvokableFactory::class
                 ],
             ],
         ];
