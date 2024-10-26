@@ -96,8 +96,6 @@ class ResourceMeta extends AbstractHelper
      *
      * @param         $text
      * @param integer $length of the description
-     *
-     * @return string
      */
     public function getText($text, int $length = 160): string
     {
@@ -114,8 +112,6 @@ class ResourceMeta extends AbstractHelper
      *
      * @param         $text
      * @param integer $max_keys number of keywords
-     *
-     * @return string
      */
     public function getKeywords($text, int $max_keys = 25): string
     {

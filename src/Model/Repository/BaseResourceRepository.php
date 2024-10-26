@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Contenir\Resource\Model\Repository;
 
-use Contenir\Db\Model\Repository\AbstractRepository;
+use Contenir\Db\Model\Repository\BaseRepository;
 use Contenir\Mvc\Workflow\Resource\ResourceAdapterInterface;
 
-class BaseResourceRepository extends AbstractRepository implements ResourceAdapterInterface
+class BaseResourceRepository extends BaseRepository implements ResourceAdapterInterface
 {
     public function getWorkflowResources(): iterable
     {

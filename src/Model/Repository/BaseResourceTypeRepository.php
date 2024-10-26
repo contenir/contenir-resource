@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Contenir\Resource\Model\Repository;
 
-use Contenir\Db\Model\Repository\AbstractRepository;
+use Contenir\Db\Model\Repository\BaseRepository;
 
-abstract class BaseResourceTypeRepository extends AbstractRepository
+class BaseResourceTypeRepository extends BaseRepository
 {
 }

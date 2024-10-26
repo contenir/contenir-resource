@@ -5,13 +5,26 @@ declare(strict_types=1);
 namespace Contenir\Resource;
 
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use RuntimeException;
 
 class ResourceManagerFactory implements FactoryInterface
 {
-    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
-    {
+    /**
+     * Create an object
+     *
+     * @param string     $requestedName
+     * @param null|array $options
+     * @throws ContainerExceptionInterface If any other error occurs.
+     * @throws NotFoundExceptionInterface
+     */
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        ?array $options = null
+    ): ResourceManager {
         $config = $container->get('config')['resource'] ?? [];
         if (empty($config)) {
             throw new RuntimeException('No resource config provided');
