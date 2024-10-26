@@ -1,14 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Contenir\Resource;
 
-use Contenir\Resource\Model\Repository\BaseResourceRepository;
+use Contenir\Db\Model\Entity\EntityInterface;
 use Contenir\Resource\Model\Repository\BaseResourceCollectionRepository;
+use Contenir\Resource\Model\Repository\BaseResourceRepository;
 use Contenir\Resource\Model\Repository\BaseResourceTypeRepository;
 use Laminas\Filter\FilterChain;
 use Laminas\Filter\StringToLower;
 use Laminas\Filter\Word\CamelCaseToUnderscore;
 use RuntimeException;
+
+use function preg_match;
 
 /**
  * The AuthManager service is responsible for user's login/logout and simple access
@@ -19,23 +24,20 @@ class ResourceManager
 {
     /**
      * User Repository
-     * @var \Application\Repository\ResourceRepository
      */
-    protected $resourceRepository;
+    protected BaseResourceRepository $resourceRepository;
 
     /**
      * User Repository
-     * @var \Application\Repository\ResourceCollectionRepository
      */
-    protected $resourceCollectionRepository;
+    protected BaseResourceCollectionRepository $resourceCollectionRepository;
 
     /**
      * User Repository
-     * @var \Application\Repository\ResourceTypeRepository
      */
-    protected $resourceTypeRepository;
+    protected BaseResourceTypeRepository $resourceTypeRepository;
 
-    protected $fieldFilter;
+    protected FilterChain $fieldFilter;
 
     /**
      * Constructs the service.
@@ -55,62 +57,62 @@ class ResourceManager
             ->attach(new StringToLower());
     }
 
-    public function findOne($resourceId)
+    public function findOne(string|iterable $resourceId): ?EntityInterface
     {
         return $this->resourceRepository->findOne([
-            'resource_id' => $resourceId
+            'resource_id' => $resourceId,
         ]);
     }
 
-    public function findByField($field, $value, array $where = [])
+    public function findByField(string $field, mixed $value, array $where = []): iterable
     {
         $where[$field] = $value;
 
         return $this->resourceRepository->find($where);
     }
 
-    public function findOneByField($field, $value, array $where = [])
+    public function findOneByField(string $field, mixed $value, array $where = []): ?EntityInterface
     {
         $where[$field] = $value;
 
         return $this->resourceRepository->findOne($where);
     }
 
-    public function findByType($resourceTypeId)
+    public function findByType(string|iterable $resourceTypeId): iterable
     {
         return $this->resourceRepository->find([
-            'resource_type_id' => $resourceTypeId
+            'resource_type_id' => $resourceTypeId,
         ]);
     }
 
-    public function findActivePageByWorkflow($workflow)
+    public function findActivePageByWorkflow(string $workflow): ?EntityInterface
     {
         return $this->resourceRepository->findOne([
             'resource_type_id' => 'page',
             'workflow'         => $workflow,
             'active'           => 'active',
-            'visible'          => 1
+            'visible'          => 1,
         ]);
     }
 
-    public function findCollectionByType($resourceTypeId)
+    public function findCollectionByType(string|iterable $resourceTypeId): iterable
     {
         return $this->resourceCollectionRepository->find([
             'resource_type_id' => $resourceTypeId,
-            'active'           => 'active'
+            'active'           => 'active',
         ], [
-            'sequence ASC'
+            'sequence ASC',
         ]);
     }
 
-    public function __call($method, array $args)
+    public function __call(string $method, array $args): mixed
     {
         $matches = [];
 
         if (preg_match('/^find(One)?(Active)?(\w+?)(?:By(\w+))?$/', $method, $matches)) {
             $where          = [];
-            $method         = (! empty($matches[1])) ? 'findOneByField' : 'findByField';
-            $active         = (! empty($matches[2])) ? 'active' : null;
+            $method         = ! empty($matches[1]) ? 'findOneByField' : 'findByField';
+            $active         = ! empty($matches[2]) ? 'active' : null;
             $resourceTypeId = $matches[3];
             $param          = $matches[4] ?? null;
 

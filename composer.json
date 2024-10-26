@@ -14,7 +14,10 @@
         "source": "https://github.com/contenir/contenir-resource"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
     "extra": {
         "laminas": {
@@ -22,22 +25,20 @@
         }
     },
     "require": {
-        "php": "^8.0.0",
+        "php": "^8.1",
         "contenir/contenir-db-model": "^1.0",
-        "laminas/laminas-mvc": "^3.0"
+        "contenir/contenir-mvc-workflow": "^1.0",
+        "laminas/laminas-filter": "^2.0",
+        "laminas/laminas-mvc": "^3.0",
+      "ext-mbstring": "*"
     },
     "require-dev": {
-        "laminas/laminas-coding-standard": "~1.0.0",
+        "laminas/laminas-coding-standard": "~3.0.0",
         "phpunit/phpunit": "^9.3"
     },
     "autoload": {
         "psr-4": {
             "Contenir\\Resource\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Contenir\\Resource\\": "test/"
         }
     },
     "scripts": {

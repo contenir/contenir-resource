@@ -1,15 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Contenir\Resource;
 
-use Contenir\Resource\ResourceManager;
-use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Psr\Container\ContainerInterface;
 use RuntimeException;
 
 class ResourceManagerFactory implements FactoryInterface
 {
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
     {
         $config = $container->get('config')['resource'] ?? [];
         if (empty($config)) {

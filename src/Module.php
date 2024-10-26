@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Contenir\Resource;
 
 use Contenir\Db\Model\Repository\Factory\RepositoryFactory;
@@ -11,30 +13,28 @@ class Module
 {
     /**
      * Retrieve default laminas-paginator config for laminas-mvc context.
-     *
-     * @return array
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return [
-            'resource' => [
+            'resource'           => [
                 'repository' => [
                     'resource'            => Model\Repository\BaseResourceRepository::class,
                     'resource_collection' => Model\Repository\BaseResourceCollectionRepository::class,
                     'resource_type'       => Model\Repository\BaseResourceTypeRepository::class,
-                ]
+                ],
             ],
             'controller_plugins' => [
-                'aliases' => [
+                'aliases'   => [
                     'resource' => Controller\Plugin\ResourcePlugin::class,
-                    'Resource' => Controller\Plugin\ResourcePlugin::class
+                    'Resource' => Controller\Plugin\ResourcePlugin::class,
                 ],
                 'factories' => [
                     Controller\Plugin\ResourcePlugin::class => Controller\Plugin\ResourcePluginFactory::class,
-                ]
+                ],
             ],
-            'service_manager' => [
-                'aliases' => [
+            'service_manager'    => [
+                'aliases'   => [
                     'resource'            => Model\Repository\BaseResourceRepository::class,
                     'resource_collection' => Model\Repository\BaseResourceCollectionRepository::class,
                     'resource_type'       => Model\Repository\BaseResourceTypeRepository::class,
@@ -46,11 +46,11 @@ class Module
                     Model\Entity\BaseResourceTypeEntity::class               => InvokableFactory::class,
                     Model\Repository\BaseResourceRepository::class           => RepositoryFactory::class,
                     Model\Repository\BaseResourceCollectionRepository::class => RepositoryFactory::class,
-                    Model\Repository\BaseResourceTypeRepository::class       => RepositoryFactory::class
-                ]
+                    Model\Repository\BaseResourceTypeRepository::class       => RepositoryFactory::class,
+                ],
             ],
-            'view_helpers' => [
-                'aliases' => [
+            'view_helpers'       => [
+                'aliases'   => [
                     'resource'        => Helper\Resource::class,
                     'Resource'        => Helper\Resource::class,
                     'resourceContent' => Helper\ResourceContent::class,
@@ -58,13 +58,13 @@ class Module
                     'resourceMeta'    => Helper\ResourceMeta::class,
                     'ResourceMeta'    => Helper\ResourceMeta::class,
                     'resourceUrl'     => Helper\ResourceUrl::class,
-                    'ResourceUrl'     => Helper\ResourceUrl::class
+                    'ResourceUrl'     => Helper\ResourceUrl::class,
                 ],
                 'factories' => [
                     Helper\Resource::class        => Helper\ResourceFactory::class,
                     Helper\ResourceContent::class => InvokableFactory::class,
                     Helper\ResourceMeta::class    => InvokableFactory::class,
-                    Helper\ResourceUrl::class     => InvokableFactory::class
+                    Helper\ResourceUrl::class     => InvokableFactory::class,
                 ],
             ],
         ];

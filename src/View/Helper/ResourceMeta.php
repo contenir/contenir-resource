@@ -1,24 +1,44 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Contenir\Resource\View\Helper;
 
-use Contenir\Resource\Model\Entity\ResourceEntity;
 use Contenir\Metadata\MetadataInterface;
 use Laminas\View\Helper\AbstractHelper;
 
+use function array_count_values;
+use function array_keys;
+use function array_slice;
+use function html_entity_decode;
+use function implode;
+use function in_array;
+use function mb_strlen;
+use function mb_substr;
+use function preg_match;
+use function preg_replace;
+use function rtrim;
+use function str_word_count;
+use function strip_tags;
+use function strlen;
+use function trim;
+use function uasort;
+
+use const ENT_COMPAT;
+use const ENT_QUOTES;
+
 class ResourceMeta extends AbstractHelper
 {
-    public function __invoke(MetadataInterface $resource = null)
+    public function __invoke(?MetadataInterface $resource = null): void
     {
         if ($resource === null) {
-            return $this;
+            return;
         }
 
         $description  = null;
         $doctype      = $this->view->Doctype()->getDoctype();
         $uri          = $this->view->ServerUrl(true);
         $canonicalUrl = preg_replace('/\?.+/', '', $uri);
-
 
         $this->view->HeadLink(['rel' => 'canonical', 'href' => $canonicalUrl]);
 
@@ -48,37 +68,38 @@ class ResourceMeta extends AbstractHelper
         }
 
         if ($resource->getMetaModified() || $resource->getMetaPublish()) {
-            $modified = ($resource->getMetaPublish()) ? $resource->getMetaPublish() : $resource->getMetaModified();
+            $modified = $resource->getMetaPublish() ? $resource->getMetaPublish() : $resource->getMetaModified();
             if ($modified) {
                 $this->view->HeadMeta()->setProperty('og:updated_time', $modified->format('Y-m-d H:i:s'));
             }
         }
     }
 
-    protected function stripTags($text)
+    protected function stripTags($text): string
     {
         return strip_tags(html_entity_decode($text, ENT_COMPAT, 'UTF-8'));
     }
 
     /**
      * banned words in english feel free to change them
-     * @var array
      */
-    public $banned_words = [];
+    public array $banned_words = [];
 
     /**
      * min len for a word in the keywords
-     * @var integer
      */
-    public $min_word_length = 4;
+    public int $min_word_length = 4;
 
     /**
      * SEO for text length
      * returns a text with text
-     * @param  integer $length of the description
+     *
+     * @param         $text
+     * @param integer $length of the description
+     *
      * @return string
      */
-    public function getText($text, $length = 160)
+    public function getText($text, int $length = 160): string
     {
         return $this->limitCharacters(
             $this->clean($text),
@@ -91,10 +112,12 @@ class ResourceMeta extends AbstractHelper
     /**
      * gets the keyword from the text in the construct
      *
-     * @param  integer $max_keys number of keywords
+     * @param         $text
+     * @param integer $max_keys number of keywords
+     *
      * @return string
      */
-    public function getKeywords($text, $max_keys = 25)
+    public function getKeywords($text, int $max_keys = 25): string
     {
         //array to keep word->number of repetitions
         $wordcount = array_count_values(str_word_count($this->clean($text), 1));
@@ -107,7 +130,7 @@ class ResourceMeta extends AbstractHelper
         }
 
         //sort keywords from most repetitions to less
-        uasort($wordcount, ['self','cmp']);
+        uasort($wordcount, ['self', 'cmp']);
 
         //keep only X keywords
         $wordcount = array_slice($wordcount, 0, $max_keys);
@@ -118,10 +141,8 @@ class ResourceMeta extends AbstractHelper
 
     /**
      * cleans an string from HTML spaces etc...
-     * @param  string $text
-     * @return string
      */
-    private function clean($text)
+    private function clean(string $text): string
     {
         $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
         $text = strip_tags($text);
@@ -134,36 +155,29 @@ class ResourceMeta extends AbstractHelper
 
     /**
      * sort for uasort descendent numbers , compares values
-     * @param  integer $a
-     * @param  integer $b
-     * @return integer
      */
-    private function cmp($a, $b)
+    private function cmp(int $a, int $b): int
     {
         if ($a == $b) {
             return 0;
         }
 
-        return ($a < $b) ? 1 : -1;
+        return $a < $b ? 1 : -1;
     }
 
     /**
-      * Limits a phrase to a given number of characters.
-      * ported from kohana text class, so this class can remain as independent as possible
-      *     $text = Text::limitCharacters($text);
-      *
-      * @param   string  $str            phrase to limit characters of
-      * @param   integer $limit          number of characters to limit to
-      * @param   string  $end_char       end character or entity
-      * @param   boolean $preserve_words enable or disable the preservation of words while limiting
-      * @return  string
-      */
-    private function limitCharacters($str, $limit = 100, $end_char = null, $preserve_words = false)
+     * Limits a phrase to a given number of characters.
+     * ported from kohana text class, so this class can remain as independent as possible
+     *     $text = Text::limitCharacters($text);
+     *
+     * @param string      $str            phrase to limit characters of
+     * @param integer     $limit          number of characters to limit to
+     * @param string|null $end_char       end character or entity
+     * @param boolean     $preserve_words enable or disable the preservation of words while limiting
+     */
+    private function limitCharacters(string $str, int $limit = 100, ?string $end_char = null, bool $preserve_words = false): string
     {
-        $end_char = ($end_char === null) ? '…' : $end_char;
-
-        $limit = (int) $limit;
-
+        $end_char = $end_char ?? '…';
         if (trim($str) === '' or mb_strlen($str) <= $limit) {
             return $str;
         }
@@ -182,6 +196,6 @@ class ResourceMeta extends AbstractHelper
             return $end_char;
         }
 
-        return rtrim($matches[0]) . ((strlen($matches[0]) === strlen($str)) ? '' : $end_char);
+        return rtrim($matches[0]) . (strlen($matches[0]) === strlen($str) ? '' : $end_char);
     }
 }

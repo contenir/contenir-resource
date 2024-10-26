@@ -1,28 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Contenir\Resource\Model\Entity;
 
 use Contenir\Db\Model\Entity\AbstractEntity;
 use Contenir\Metadata\MetadataInterface;
+use Contenir\Mvc\Workflow\Resource\ResourceInterface;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Exception;
 
-abstract class BaseResourceEntity extends AbstractEntity implements
-    MetadataInterface
+use function array_filter;
+use function explode;
+use function implode;
+use function sprintf;
+
+class BaseResourceEntity extends AbstractEntity implements
+    MetadataInterface,
+    ResourceInterface
 {
-    protected $routeId;
-    protected $routePath;
-
-    public function getResourceId()
-    {
-        return 'resource';
-    }
+    protected ?string $routeId   = null;
+    protected ?string $routePath = null;
 
     /**
      * getRouteId
      *
      * @param  mixed $path
-     *
      * @return String
      */
     public function getRouteId(string $path = ''): string
@@ -30,14 +34,14 @@ abstract class BaseResourceEntity extends AbstractEntity implements
         if ($this->routeId === null) {
             $routeId = sprintf(
                 '%s-%s',
-                $this->resource_type_id,
-                $this->resource_id
+                $this->resource_type_id ?? null,
+                implode('-', $this->getPrimaryKeys() ?? null)
             );
 
             $this->routeId = $routeId;
         }
 
-        return sprintf('%s', join('/', array_filter([$this->routeId, $path])));
+        return sprintf('%s', implode('/', array_filter([$this->routeId, $path])));
     }
 
     /**
@@ -48,48 +52,59 @@ abstract class BaseResourceEntity extends AbstractEntity implements
     public function getRoutePath(): string
     {
         if ($this->routePath === null) {
-            $parts           = explode('/', (string) $this->slug);
-            $this->routePath = sprintf('/%s', join('/', array_filter($parts)));
+            $parts           = explode('/', $this->getSlug());
+            $this->routePath = sprintf('/%s', implode('/', array_filter($parts)));
         }
 
         return $this->routePath;
     }
 
-    public function getMetaTitle()
+    public function getMetaTitle(): ?string
     {
-        $fallbackTitle = join(' ', array_filter([
+        $fallbackTitle = implode(' ', array_filter([
             $this->title ?? null,
-            $this->subtitle ?? null
+            $this->subtitle ?? null,
         ]));
 
         return $this->meta_title ?? $fallbackTitle;
     }
 
-    public function getMetaDescription()
+    public function getMetaDescription(): ?string
     {
         return $this->meta_description ?? $this->description ?? null;
     }
 
-    public function getMetaImage()
+    public function getMetaImage(): ?string
     {
         return $this->image[0]->path ?? null;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getMetaModified(): ?DateTimeInterface
     {
-        if ($this->updated) {
-            return new DateTimeImmutable($this->updated);
+        if ($this->updated ?? null) {
+            return new DateTimeImmutable($this->updated ?? null);
         }
 
         return null;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getMetaPublish(): ?DateTimeInterface
     {
-        if ($this->created) {
-            return new DateTimeImmutable($this->updated);
+        if ($this->created ?? null) {
+            return new DateTimeImmutable($this->updated ?? null);
         }
 
         return null;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->slug ?? '';
     }
 }

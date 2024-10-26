@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Contenir\Resource\View\Helper;
 
 use Contenir\Db\Model\Entity\AbstractEntity;
@@ -7,7 +9,7 @@ use Laminas\View\Helper\AbstractHelper;
 
 class ResourceUrl extends AbstractHelper
 {
-    public function __invoke($resourceId, $resourceUrl, $linkTarget = null)
+    public function __invoke($resourceId, $resourceUrl, $linkTarget = null): array
     {
         $url = null;
 
