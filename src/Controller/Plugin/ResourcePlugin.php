@@ -27,7 +27,7 @@ class ResourcePlugin extends AbstractPlugin
     }
 
     public function __invoke(
-        ?string $resourceId = null,
+        string|array|null $resourceId = null,
         bool $throwException = true
     ): EntityInterface|ResourceManager|null {
         if ($resourceId === null) {

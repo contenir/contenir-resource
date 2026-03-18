@@ -17,7 +17,7 @@ class Resource extends AbstractHelper
         $this->resourceManager = $resourceManager;
     }
 
-    public function __invoke(int|iterable|null $resourceId = null): EntityInterface|self
+    public function __invoke(string|iterable|null $resourceId = null): EntityInterface|self
     {
         if ($resourceId === null) {
             return $this;
