@@ -19,7 +19,7 @@ use function preg_match;
  * default). An absent key takes its default; a key that is present with a
  * value of the wrong type or shape is an error, never silently ignored.
  *
- * @internal
+ * @api Shared with the framework adapters.
  */
 final readonly class ConfigReader
 {

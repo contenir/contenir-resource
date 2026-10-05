@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 adheres to [Semantic Versioning](https://semver.org/).
 
-## [2.0.0] - Unreleased
+## [2.0.0-RC1] - Unreleased
 
 A rewrite as a framework-neutral core on contenir-db-model 2. The laminas-mvc parts move to adapters: Mezzio sites
 use `contenir/contenir-resource-mezzio`; a laminas-mvc 2.x adapter will be `contenir/contenir-resource-laminas-mvc`.

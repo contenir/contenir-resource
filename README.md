@@ -33,9 +33,22 @@ Version 2.0 is a rewrite and is not compatible with 1.x; see [UPGRADE.md](UPGRAD
 
 ## Install
 
-```bash
-composer require contenir/contenir-resource
+2.0 is a release candidate (`2.0.0-RC1`): contenir-db-model 2 is itself at RC and builds on php-db/phpdb 0.6, which
+has no stable release yet. Composer only honours stability flags in the root package, so a site needs these in its
+own `composer.json`:
+
+```json
+{
+    "require": {
+        "contenir/contenir-resource": "^2.0@RC",
+        "contenir/contenir-db-model": "^2.0@RC",
+        "php-db/phpdb": "0.6.x-dev@dev"
+    }
+}
 ```
+
+Alternatively set `"minimum-stability": "dev"` with `"prefer-stable": true` in the site's `composer.json` and
+require `contenir/contenir-resource` normally.
 
 With [laminas-component-installer](https://docs.laminas.dev/laminas-component-installer/) the
 `Contenir\Resource\Core\ConfigProvider` is added to your configuration automatically. It registers its services

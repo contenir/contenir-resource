@@ -11,7 +11,7 @@ use Psr\Container\ContainerInterface;
 /**
  * Fetches a container service and checks its type.
  *
- * @internal
+ * @api Shared with the framework adapters.
  */
 final class ServiceLocator
 {
