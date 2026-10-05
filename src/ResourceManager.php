@@ -2,132 +2,104 @@
 
 declare(strict_types=1);
 
-namespace Contenir\Resource;
+namespace Contenir\Resource\Core;
 
-use Contenir\Db\Model\Entity\EntityInterface;
-use Contenir\Resource\Model\Repository\BaseResourceCollectionRepository;
-use Contenir\Resource\Model\Repository\BaseResourceRepository;
-use Contenir\Resource\Model\Repository\BaseResourceTypeRepository;
-use Laminas\Filter\FilterChain;
-use Laminas\Filter\StringToLower;
-use Laminas\Filter\Word\CamelCaseToUnderscore;
-use RuntimeException;
+use Contenir\Resource\Core\Entity\AbstractResourceEntity;
+use Contenir\Resource\Core\Entity\ResourceStatus;
+use Contenir\Resource\Core\Repository\ResourceCollectionRepository;
+use Contenir\Resource\Core\Repository\ResourceRepository;
+use Override;
 
+use function is_int;
 use function preg_match;
 
 /**
- * The AuthManager service is responsible for user's login/logout and simple access
- * filtering. The access filtering feature checks whether the current visitor
- * is allowed to see the given page or not.
+ * The default resource manager, over the resource and resource collection
+ * repositories.
+ *
+ * @api
+ *
+ * @mago-expect lint:too-many-methods One method per lookup of ResourceManagerInterface, plus the constructor.
  */
-class ResourceManager
+final readonly class ResourceManager implements ResourceManagerInterface
 {
-    /**
-     * User Repository
-     */
-    protected BaseResourceRepository $resourceRepository;
-
-    /**
-     * User Repository
-     */
-    protected BaseResourceCollectionRepository $resourceCollectionRepository;
-
-    /**
-     * User Repository
-     */
-    protected BaseResourceTypeRepository $resourceTypeRepository;
-
-    protected FilterChain $fieldFilter;
-
-    /**
-     * Constructs the service.
-     */
     public function __construct(
-        BaseResourceRepository $resourceRepository,
-        BaseResourceCollectionRepository $resourceCollectionRepository,
-        BaseResourceTypeRepository $resourceTypeRepository
-    ) {
-        $this->resourceRepository           = $resourceRepository;
-        $this->resourceCollectionRepository = $resourceCollectionRepository;
-        $this->resourceTypeRepository       = $resourceTypeRepository;
+        private ResourceRepository $resources,
+        private ResourceCollectionRepository $collections,
+    ) {}
 
-        $this->fieldFilter = new FilterChain();
-        $this->fieldFilter
-            ->attach(new CamelCaseToUnderscore())
-            ->attach(new StringToLower());
+    #[Override]
+    public function find(int|string $resourceId): ?AbstractResourceEntity
+    {
+        $valid = is_int($resourceId) ? $resourceId > 0 : 1 === preg_match('/^[1-9][0-9]*$/D', $resourceId);
+
+        return $valid ? $this->resources->find($resourceId) : null;
     }
 
-    public function findOne(string|iterable $resourceId): ?EntityInterface
+    #[Override]
+    public function findActive(int|string $resourceId): ?AbstractResourceEntity
     {
-        return $this->resourceRepository->findOne([
-            'resource_id' => $resourceId,
+        $resource = $this->find($resourceId);
+
+        return true === $resource?->isActive() ? $resource : null;
+    }
+
+    #[Override]
+    public function findActiveBySlug(string $slug): ?AbstractResourceEntity
+    {
+        return $this->findOneBy(['slug' => $slug, 'status' => ResourceStatus::Active]);
+    }
+
+    #[Override]
+    public function findActiveByWorkflow(string $workflow): ?AbstractResourceEntity
+    {
+        return $this->findOneBy(['workflow' => $workflow, 'status' => ResourceStatus::Active]);
+    }
+
+    #[Override]
+    public function findActivePageByWorkflow(string $workflow): ?AbstractResourceEntity
+    {
+        return $this->findOneBy([
+            'resourceTypeId' => ResourceRepository::ROOT_TYPE,
+            'workflow'       => $workflow,
+            'status'         => ResourceStatus::Active,
+            'visible'        => true,
         ]);
     }
 
-    public function findByField(string $field, mixed $value, array $where = []): iterable
+    #[Override]
+    public function findBy(array $criteria = [], array $orderBy = []): array
     {
-        $where[$field] = $value;
-
-        return $this->resourceRepository->find($where);
+        return $this->resources->findBy($criteria, $orderBy);
     }
 
-    public function findOneByField(string $field, mixed $value, array $where = []): ?EntityInterface
+    #[Override]
+    public function findByType(string|array $resourceTypeId, array $criteria = [], array $orderBy = []): array
     {
-        $where[$field] = $value;
-
-        return $this->resourceRepository->findOne($where);
+        return $this->findBy([...$criteria, 'resourceTypeId' => $resourceTypeId], $orderBy);
     }
 
-    public function findByType(string|iterable $resourceTypeId): iterable
+    #[Override]
+    public function findCollectionByType(string|array $resourceTypeId): array
     {
-        return $this->resourceRepository->find([
-            'resource_type_id' => $resourceTypeId,
-        ]);
+        return $this->collections->findBy(
+            ['resourceTypeId' => $resourceTypeId, 'status' => ResourceStatus::Active],
+            ['sequence' => 'ASC'],
+        );
     }
 
-    public function findActivePageByWorkflow(string $workflow): ?EntityInterface
+    #[Override]
+    public function findOneBy(array $criteria, array $orderBy = []): ?AbstractResourceEntity
     {
-        return $this->resourceRepository->findOne([
-            'resource_type_id' => 'page',
-            'workflow'         => $workflow,
-            'active'           => 'active',
-            'visible'          => 1,
-        ]);
+        return $this->resources->findOneBy($criteria, $orderBy);
     }
 
-    public function findCollectionByType(string|iterable $resourceTypeId): iterable
-    {
-        return $this->resourceCollectionRepository->find([
-            'resource_type_id' => $resourceTypeId,
-            'active'           => 'active',
-        ], [
-            'sequence ASC',
-        ]);
-    }
-
-    public function __call(string $method, array $args): mixed
-    {
-        $matches = [];
-
-        if (preg_match('/^find(One)?(Active)?(\w+?)(?:By(\w+))?$/', $method, $matches)) {
-            $where          = [];
-            $method         = ! empty($matches[1]) ? 'findOneByField' : 'findByField';
-            $active         = ! empty($matches[2]) ? 'active' : null;
-            $resourceTypeId = $matches[3];
-            $param          = $matches[4] ?? null;
-
-            if ($active) {
-                $where['active'] = 'active';
-            }
-
-            if ($param) {
-                $field         = $this->fieldFilter->filter($param);
-                $where[$field] = $args[0];
-            }
-
-            return $this->$method('resource_type_id', $resourceTypeId, $where);
-        }
-
-        throw new RuntimeException("Unrecognized method '$method()'");
+    #[Override]
+    public function findOneByType(
+        string|array $resourceTypeId,
+        array $criteria = [],
+        array $orderBy = [],
+    ): ?AbstractResourceEntity {
+        return $this->findOneBy([...$criteria, 'resourceTypeId' => $resourceTypeId], $orderBy);
     }
 }
