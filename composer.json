@@ -1,59 +1,83 @@
 {
     "name": "contenir/contenir-resource",
-    "description": "Contenir Resource components",
+    "description": "Contenir resources on contenir-db-model 2: attribute-mapped resource, collection and type entities, repositories, the page tree, page metadata, summaries and link normalisation. Framework neutral.",
+    "type": "library",
     "license": "BSD-3-Clause",
     "keywords": [
         "contenir",
-        "laminas",
-        "mvc"
+        "resource",
+        "metadata",
+        "seo",
+        "data-mapper"
     ],
     "homepage": "https://contenir.com.au",
     "support": {
         "docs": "https://docs.contenir.com.au/contenir-resource/",
-        "issues": "https://contenir.com.au/issues",
+        "issues": "https://github.com/contenir/contenir-resource/issues",
         "source": "https://github.com/contenir/contenir-resource"
     },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
-        }
-    },
-    "extra": {
-        "laminas": {
-            "component": "Contenir\\Resource"
-        }
-    },
     "require": {
-        "php": "^8.1",
-        "contenir/contenir-db-model": "^1.0",
-        "contenir/contenir-mvc-workflow": "^1.0",
-        "laminas/laminas-filter": "^2.0",
-        "laminas/laminas-mvc": "^3.0",
-      "ext-mbstring": "*"
+        "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
+        "contenir/contenir-db-model": "^2.0@RC",
+        "contenir/contenir-metadata": "^2.0",
+        "psr/container": "^1.1 || ^2.0"
     },
     "require-dev": {
-        "laminas/laminas-coding-standard": "~3.0.0",
-        "phpunit/phpunit": "^10.5 || ^11.0"
+        "infection/infection": "^0.34.1",
+        "laminas/laminas-servicemanager": "^3.22 || ^4.0",
+        "php-db/phpdb-qa-tools": "0.1.x-dev",
+        "php-db/phpdb-sqlite": "^0.2.0 || 0.3.x-dev",
+        "phpunit/phpunit": "^11.5.42"
     },
     "autoload": {
         "psr-4": {
-            "Contenir\\Resource\\": "src/"
+            "Contenir\\Resource\\Core\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Contenir\\Resource\\Tests\\": "tests/"
+            "Contenir\\Resource\\Core\\Tests\\": "tests/"
         }
     },
     "scripts": {
         "check": [
             "@cs-check",
-            "@test"
+            "@static-analysis",
+            "@test",
+            "@test-integration",
+            "@mutation-test"
         ],
-        "cs-check": "phpcs",
-        "cs-fix": "phpcbf",
-        "test": "phpunit --colors=always",
-        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
-    }
+        "cs-check": [
+            "mago format --check",
+            "mago lint"
+        ],
+        "cs-fix": [
+            "mago format",
+            "mago lint --fix"
+        ],
+        "static-analysis": "mago analyze",
+        "test": "phpunit --colors=always --testsuite unit",
+        "test-integration": "phpunit --colors=always --testsuite integration",
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
+        "mutation-test": "infection"
+    },
+    "config": {
+        "platform": {
+            "php": "8.3.99"
+        },
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true
+        }
+    },
+    "extra": {
+        "laminas": {
+            "config-provider": "Contenir\\Resource\\Core\\ConfigProvider"
+        },
+        "branch-alias": {
+            "dev-main": "2.0.x-dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
