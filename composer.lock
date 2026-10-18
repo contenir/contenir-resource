@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f8c4acba3da0231186187a5e3747c98b",
+    "content-hash": "b2cd9a2c1fbd722dba4c0a5dea2705c9",
     "packages": [
         {
             "name": "brick/varexporter",
@@ -57,16 +57,16 @@
         },
         {
             "name": "contenir/contenir-db-model",
-            "version": "dev-main",
+            "version": "v2.0.0-rc5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/contenir/contenir-db-model.git",
-                "reference": "472bc0b70c74c3ac4be19e7460b3634f96de79d5"
+                "reference": "e699fa92fbdf24a8b3ee42dcf0c518c47feb7170"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/contenir/contenir-db-model/zipball/472bc0b70c74c3ac4be19e7460b3634f96de79d5",
-                "reference": "472bc0b70c74c3ac4be19e7460b3634f96de79d5",
+                "url": "https://api.github.com/repos/contenir/contenir-db-model/zipball/e699fa92fbdf24a8b3ee42dcf0c518c47feb7170",
+                "reference": "e699fa92fbdf24a8b3ee42dcf0c518c47feb7170",
                 "shasum": ""
             },
             "require": {
@@ -83,7 +83,6 @@
                 "php-db/phpdb-sqlite": "^0.2.0",
                 "phpunit/phpunit": "^11.5.42"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "laminas": {
@@ -114,7 +113,7 @@
                 "issues": "https://github.com/contenir/contenir-db-model/issues",
                 "source": "https://github.com/contenir/contenir-db-model"
             },
-            "time": "2026-10-18T01:28:52+00:00"
+            "time": "2026-10-18T01:53:15+00:00"
         },
         {
             "name": "contenir/contenir-metadata",
@@ -4822,17 +4821,9 @@
             "time": "2026-10-05T23:14:19+00:00"
         }
     ],
-    "aliases": [
-        {
-            "package": "contenir/contenir-db-model",
-            "version": "dev-main",
-            "alias": "2.0.0-rc5",
-            "alias_normalized": "2.0.0.0-RC5"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "contenir/contenir-db-model": 20,
         "contenir/contenir-preview": 20,
         "contenir/contenir-qa-tools": 20,
         "php-db/phpdb-sqlite": 20
