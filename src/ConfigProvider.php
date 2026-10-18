@@ -6,6 +6,7 @@ namespace Contenir\Resource\Core;
 
 use Contenir\Resource\Core\Container\PageMetadataBuilderFactory;
 use Contenir\Resource\Core\Container\PathImageUrlResolverFactory;
+use Contenir\Resource\Core\Container\PreviewResourceManagerDelegator;
 use Contenir\Resource\Core\Container\RepositoryFactory;
 use Contenir\Resource\Core\Container\ResourceManagerFactory;
 use Contenir\Resource\Core\Container\ResourceSummaryFactory;
@@ -20,13 +21,16 @@ use Contenir\Resource\Core\Repository\ResourceTypeRepository;
 
 /**
  * Registers the framework-neutral services under "dependencies", the key
- * Mezzio and laminas-config-aggregator setups read. It contributes no
+ * Mezzio and laminas-config-aggregator setups read. Where CMS previews are
+ * rendered (contenir-preview's PreviewContext service exists), the resource
+ * manager is wrapped so a previewed resource carries the editor's values. It contributes no
  * "contenir_resource" config: every setting has a default in code.
  *
  * @psalm-type ServiceConfig = array{
  *     aliases: array<class-string, class-string>,
  *     invokables: array<class-string, class-string>,
- *     factories: array<class-string, class-string>
+ *     factories: array<class-string, class-string>,
+ *     delegators: array<class-string, list<class-string>>
  * }
  *
  * @api
@@ -54,6 +58,9 @@ final class ConfigProvider
                 PageMetadataBuilder::class          => PageMetadataBuilderFactory::class,
                 PathImageUrlResolver::class         => PathImageUrlResolverFactory::class,
                 ResourceSummary::class              => ResourceSummaryFactory::class,
+            ],
+            'delegators' => [
+                ResourceManager::class => [PreviewResourceManagerDelegator::class],
             ],
         ];
     }

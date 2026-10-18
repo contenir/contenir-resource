@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- CMS previews of resources: where contenir-preview's preview context is registered, the resource manager finds the
+  previewed resource with the editor's unsaved values, drafts and resources not saved yet included, and puts it in its
+  place wherever the site finds it, lists included (`Preview\PreviewResourceManager`, registered by
+  `Container\PreviewResourceManagerDelegator`). See [CMS previews](docs/previews.md).
+
 ## [2.0.0-RC1] - 2026-10-06
 
 A rewrite as a framework-neutral core on contenir-db-model 2. The laminas-mvc parts move to adapters: Mezzio sites

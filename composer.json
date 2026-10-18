@@ -18,16 +18,20 @@
     },
     "require": {
         "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
-        "contenir/contenir-db-model": "^2.0@RC",
+        "contenir/contenir-db-model": "dev-feat/entity-values-from-row as 2.0.0-rc5",
         "contenir/contenir-metadata": "^2.0",
         "psr/container": "^1.1 || ^2.0"
     },
     "require-dev": {
+        "contenir/contenir-preview": "dev-feat/container as 0.1.x-dev",
         "contenir/contenir-qa-tools": "0.1.x-dev",
         "infection/infection": "^0.34.1",
         "laminas/laminas-servicemanager": "^3.22 || ^4.0",
         "php-db/phpdb-sqlite": "^0.2.0 || 0.3.x-dev",
         "phpunit/phpunit": "^11.5.42"
+    },
+    "suggest": {
+        "contenir/contenir-preview": "Lets a CMS preview show a resource's unsaved values (see docs/previews.md)"
     },
     "autoload": {
         "psr-4": {

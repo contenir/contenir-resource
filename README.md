@@ -124,6 +124,7 @@ The [docs](docs/) folder covers each area:
 - [Page metadata](docs/metadata.md)
 - [Summaries and links](docs/content-and-links.md)
 - [Configuration and container](docs/configuration.md)
+- [CMS previews](docs/previews.md)
 
 ## Development
 
