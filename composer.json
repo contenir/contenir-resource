@@ -18,7 +18,7 @@
     },
     "require": {
         "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
-        "contenir/contenir-db-model": "dev-feat/entity-values-from-row as 2.0.0-rc5",
+        "contenir/contenir-db-model": "dev-main as 2.0.0-rc5",
         "contenir/contenir-metadata": "^2.0",
         "psr/container": "^1.1 || ^2.0"
     },
