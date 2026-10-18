@@ -7,6 +7,7 @@ namespace Contenir\Resource\Core\Tests\Unit;
 use Contenir\Resource\Core\ConfigProvider;
 use Contenir\Resource\Core\Container\PageMetadataBuilderFactory;
 use Contenir\Resource\Core\Container\PathImageUrlResolverFactory;
+use Contenir\Resource\Core\Container\PreviewResourceManagerDelegator;
 use Contenir\Resource\Core\Container\RepositoryFactory;
 use Contenir\Resource\Core\Container\ResourceManagerFactory;
 use Contenir\Resource\Core\Container\ResourceSummaryFactory;
@@ -53,6 +54,9 @@ final class ConfigProviderTest extends TestCase
                     PageMetadataBuilder::class          => PageMetadataBuilderFactory::class,
                     PathImageUrlResolver::class         => PathImageUrlResolverFactory::class,
                     ResourceSummary::class              => ResourceSummaryFactory::class,
+                ],
+                'delegators' => [
+                    ResourceManager::class => [PreviewResourceManagerDelegator::class],
                 ],
             ],
             (new ConfigProvider())->getDependencies(),

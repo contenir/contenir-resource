@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9d1d826da2b60f6c2164d4a604a959bd",
+    "content-hash": "b2cd9a2c1fbd722dba4c0a5dea2705c9",
     "packages": [
         {
             "name": "brick/varexporter",
@@ -57,28 +57,29 @@
         },
         {
             "name": "contenir/contenir-db-model",
-            "version": "v2.0.0-rc2",
+            "version": "v2.0.0-rc5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/contenir/contenir-db-model.git",
-                "reference": "a11bc4f95f0418e76bff9d4175a300c14e5c8ce7"
+                "reference": "e699fa92fbdf24a8b3ee42dcf0c518c47feb7170"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/contenir/contenir-db-model/zipball/a11bc4f95f0418e76bff9d4175a300c14e5c8ce7",
-                "reference": "a11bc4f95f0418e76bff9d4175a300c14e5c8ce7",
+                "url": "https://api.github.com/repos/contenir/contenir-db-model/zipball/e699fa92fbdf24a8b3ee42dcf0c518c47feb7170",
+                "reference": "e699fa92fbdf24a8b3ee42dcf0c518c47feb7170",
                 "shasum": ""
             },
             "require": {
                 "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
                 "php-db/phpdb": "0.6.x-dev",
                 "psr/container": "^1.1 || ^2.0",
-                "psr/simple-cache": "^2.0 || ^3.0"
+                "psr/simple-cache": "^1.0 || ^2.0 || ^3.0"
             },
             "require-dev": {
+                "contenir/contenir-qa-tools": "0.1.x-dev",
+                "infection/infection": "^0.34.1",
                 "php-db/phpdb-mysql": "^0.4.0",
                 "php-db/phpdb-pgsql": "0.1.x-dev",
-                "php-db/phpdb-qa-tools": "0.1.x-dev",
                 "php-db/phpdb-sqlite": "^0.2.0",
                 "phpunit/phpunit": "^11.5.42"
             },
@@ -112,7 +113,7 @@
                 "issues": "https://github.com/contenir/contenir-db-model/issues",
                 "source": "https://github.com/contenir/contenir-db-model"
             },
-            "time": "2026-10-05T04:43:19+00:00"
+            "time": "2026-10-18T01:53:15+00:00"
         },
         {
             "name": "contenir/contenir-metadata",
@@ -372,12 +373,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-db/phpdb.git",
-                "reference": "e01caf67ba84bdadc92f3cf709295a554c3b212d"
+                "reference": "e9dd92db553daae79ddc4ff197b20fe7bbdf6b10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-db/phpdb/zipball/e01caf67ba84bdadc92f3cf709295a554c3b212d",
-                "reference": "e01caf67ba84bdadc92f3cf709295a554c3b212d",
+                "url": "https://api.github.com/repos/php-db/phpdb/zipball/e9dd92db553daae79ddc4ff197b20fe7bbdf6b10",
+                "reference": "e9dd92db553daae79ddc4ff197b20fe7bbdf6b10",
                 "shasum": ""
             },
             "require": {
@@ -431,7 +432,7 @@
                 "issues": "https://github.com/php-db/phpdb/issues",
                 "source": "https://github.com/php-db/phpdb"
             },
-            "time": "2026-10-05T23:32:00+00:00"
+            "time": "2026-10-12T05:05:03+00:00"
         },
         {
             "name": "psr/container",
@@ -768,6 +769,54 @@
                 }
             ],
             "time": "2024-05-06T16:37:16+00:00"
+        },
+        {
+            "name": "contenir/contenir-preview",
+            "version": "0.1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/contenir/contenir-preview.git",
+                "reference": "6d11419093dc26c12c813d2115772c8340163686"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/contenir/contenir-preview/zipball/6d11419093dc26c12c813d2115772c8340163686",
+                "reference": "6d11419093dc26c12c813d2115772c8340163686",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
+                "psr/clock": "^1.0",
+                "psr/container": "^1.1 || ^2.0",
+                "psr/simple-cache": "^1.0 || ^2.0 || ^3.0"
+            },
+            "require-dev": {
+                "contenir/contenir-qa-tools": "0.1.x-dev",
+                "infection/infection": "^0.35.6",
+                "phpunit/phpunit": "^11.5"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Contenir\\Preview\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "The Contenir preview protocol: signed preview tokens from the CMS, their verification on a site, and the request-scoped context a site renders a previewed record from.",
+            "keywords": [
+                "cms",
+                "contenir",
+                "preview"
+            ],
+            "support": {
+                "issues": "https://github.com/contenir/contenir-preview/issues",
+                "source": "https://github.com/contenir/contenir-preview/tree/0.1.x"
+            },
+            "time": "2026-10-18T01:29:59+00:00"
         },
         {
             "name": "contenir/contenir-qa-tools",
@@ -4775,7 +4824,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "contenir/contenir-db-model": 5,
+        "contenir/contenir-preview": 20,
         "contenir/contenir-qa-tools": 20,
         "php-db/phpdb-sqlite": 20
     },
@@ -4784,9 +4833,9 @@
     "platform": {
         "php": "~8.3.0 || ~8.4.0 || ~8.5.0"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "platform-overrides": {
         "php": "8.3.99"
     },
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
