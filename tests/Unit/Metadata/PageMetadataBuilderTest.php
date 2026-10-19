@@ -158,25 +158,25 @@ final class PageMetadataBuilderTest extends TestCase
     }
 
     #[Test]
-    public function theModifiedDateIsTheFallbackUpdatedTime(): void
+    public function theModifiedDateIsPreferredForTheUpdatedTime(): void
     {
         $modified = new DateTimeImmutable('2024-01-01');
-        $metadata = (new PageMetadataBuilder())->build(new FixedMetadata(modified: $modified), 'https://s.test/');
+        $metadata = (new PageMetadataBuilder())->build(
+            new FixedMetadata(
+                modified: $modified,
+                publish: new DateTimeImmutable('2020-01-01'),
+            ),
+            'https://s.test/',
+        );
 
         static::assertSame($modified, $metadata->updated);
     }
 
     #[Test]
-    public function thePublishDateIsPreferredForTheUpdatedTime(): void
+    public function thePublishDateIsTheFallbackUpdatedTime(): void
     {
         $publish  = new DateTimeImmutable('2020-01-01');
-        $metadata = (new PageMetadataBuilder())->build(
-            new FixedMetadata(
-                modified: new DateTimeImmutable('2024-01-01'),
-                publish: $publish,
-            ),
-            'https://s.test/',
-        );
+        $metadata = (new PageMetadataBuilder())->build(new FixedMetadata(publish: $publish), 'https://s.test/');
 
         static::assertSame($publish, $metadata->updated);
     }

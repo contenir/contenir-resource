@@ -88,6 +88,7 @@ conversion no longer applies.
 
 - `og:updated_time` is ISO 8601 (`2024-01-02T03:04:05+00:00`), not `2024-01-02 03:04:05`.
 - `og:url` and `twitter:url` are the canonical URL, without the query string.
+- Twitter tags use the `name` attribute, not `property`, and a `twitter:card` tag is added after `twitter:url`.
 - Meta descriptions have all whitespace collapsed; one without word breaks is cut mid-word instead of being empty.
 - Summaries are cut by characters, not bytes.
 - External links without a scheme get `https://` (1.x: `http://`); `javascript:` and other schemes are rejected.

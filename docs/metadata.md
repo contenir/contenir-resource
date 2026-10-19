@@ -10,7 +10,7 @@ into a `PageMetadata`:
 | `title` | `getMetaTitle()` |
 | `description` | `getMetaDescription()`, cleaned (`MetaText::clean()`) and cut at a word break to `description_length` characters |
 | `image` | `getMetaImage()`, resolved by the `ImageUrlResolverInterface` |
-| `updated` | `getMetaPublish()`, or else `getMetaModified()` |
+| `updated` | `getMetaModified()`, or else `getMetaPublish()` |
 
 Blank values are left out, and the tags that depend on them are not emitted.
 
@@ -35,21 +35,24 @@ $renderer->render($metadata);     // <title>, then the link and meta tags, one p
 $renderer->renderTags($metadata); // the same without <title>
 ```
 
-Output it unescaped in `<head>` (for example `{{ meta|raw }}` in Twig). The tags, in order:
+Output it unescaped in `<head>` (for example `{{ meta|raw }}` in Twig). Open Graph tags use `property`, and Twitter
+tags use `name`. `twitter:card` is `summary_large_image` when there is an image, and `summary` otherwise. The tags, in
+order:
 
 ```html
 <title>About us</title>
 <link rel="canonical" href="https://www.example.com/about">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.example.com/about">
-<meta property="twitter:url" content="https://www.example.com/about">
+<meta name="twitter:url" content="https://www.example.com/about">
+<meta name="twitter:card" content="summary_large_image">
 <meta property="og:title" content="About us">
-<meta property="twitter:title" content="About us">
+<meta name="twitter:title" content="About us">
 <meta name="description" content="Who we are">
 <meta property="og:description" content="Who we are">
-<meta property="twitter:description" content="Who we are">
+<meta name="twitter:description" content="Who we are">
 <meta property="og:image" content="https://cdn.example.com/about.jpg">
-<meta property="twitter:image" content="https://cdn.example.com/about.jpg">
+<meta name="twitter:image" content="https://cdn.example.com/about.jpg">
 <meta property="og:updated_time" content="2024-01-02T03:04:05+00:00">
 ```
 
