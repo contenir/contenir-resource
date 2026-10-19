@@ -45,7 +45,9 @@ final readonly class PageMetadata
 
     /**
      * The meta tags, in the order the laminas-mvc ResourceMeta helper added
-     * them; tags whose value is not set are left out.
+     * them with twitter:card after twitter:url; tags whose value is not set
+     * are left out. Open Graph tags use the property attribute and Twitter
+     * tags the name attribute.
      *
      * @return list<MetaTag>
      */
@@ -54,23 +56,28 @@ final readonly class PageMetadata
         $tags = [
             ['attribute' => 'property', 'key' => 'og:type', 'content' => self::TYPE],
             ['attribute' => 'property', 'key' => 'og:url', 'content' => $this->url],
-            ['attribute' => 'property', 'key' => 'twitter:url', 'content' => $this->url],
+            ['attribute' => 'name', 'key' => 'twitter:url', 'content' => $this->url],
+            [
+                'attribute' => 'name',
+                'key'       => 'twitter:card',
+                'content'   => null === $this->image ? 'summary' : 'summary_large_image',
+            ],
         ];
 
         if (null !== $this->title) {
             $tags[] = ['attribute' => 'property', 'key' => 'og:title', 'content' => $this->title];
-            $tags[] = ['attribute' => 'property', 'key' => 'twitter:title', 'content' => $this->title];
+            $tags[] = ['attribute' => 'name', 'key' => 'twitter:title', 'content' => $this->title];
         }
 
         if (null !== $this->description) {
             $tags[] = ['attribute' => 'name', 'key' => 'description', 'content' => $this->description];
             $tags[] = ['attribute' => 'property', 'key' => 'og:description', 'content' => $this->description];
-            $tags[] = ['attribute' => 'property', 'key' => 'twitter:description', 'content' => $this->description];
+            $tags[] = ['attribute' => 'name', 'key' => 'twitter:description', 'content' => $this->description];
         }
 
         if (null !== $this->image) {
             $tags[] = ['attribute' => 'property', 'key' => 'og:image', 'content' => $this->image];
-            $tags[] = ['attribute' => 'property', 'key' => 'twitter:image', 'content' => $this->image];
+            $tags[] = ['attribute' => 'name', 'key' => 'twitter:image', 'content' => $this->image];
         }
 
         if (null !== $this->updated) {

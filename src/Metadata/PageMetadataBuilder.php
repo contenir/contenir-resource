@@ -76,7 +76,7 @@ final readonly class PageMetadataBuilder
                 ? null
                 : self::nonEmpty(MetaText::summarise($description, $this->descriptionLength)),
             image: null === $image ? null : $this->images->resolve(trim($image), $origin),
-            updated: $resource->getMetaPublish() ?? $resource->getMetaModified(),
+            updated: $resource->getMetaModified() ?? $resource->getMetaPublish(),
         );
     }
 }

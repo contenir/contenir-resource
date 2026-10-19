@@ -4,6 +4,20 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased] - 2026-10-19
+
+### Added
+
+- A `twitter:card` tag: `summary_large_image` when the page has an image, and `summary` otherwise, so shared images
+  show large.
+
+### Fixed
+
+- `og:updated_time` is the date the page last changed (`getMetaModified()`), falling back to `getMetaPublish()`. It
+  was the publish date whenever one was set, which for a resource is when it was created.
+- Twitter tags are written with the `name` attribute, as X documents them, instead of `property`. Open Graph tags
+  keep `property`.
+
 ## [2.0.0-RC2] - 2026-10-18
 
 ### Added

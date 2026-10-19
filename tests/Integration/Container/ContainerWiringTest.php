@@ -39,6 +39,7 @@ final class ContainerWiringTest extends TestCase
             'title'            => 'About',
             'meta_description' => '<p>All about us</p>',
             'created'          => '2024-01-02 03:04:05',
+            'updated'          => '2025-06-07 08:09:10',
         ]);
 
         $resource = $this->container->get(ResourceManagerInterface::class)->findActive(1);
@@ -53,9 +54,10 @@ final class ContainerWiringTest extends TestCase
         );
         static::assertStringContainsString('<meta name="description" content="All about us">', $html);
         static::assertStringContainsString(
-            '<meta property="og:updated_time" content="2024-01-02T03:04:05+00:00">',
+            '<meta property="og:updated_time" content="2025-06-07T08:09:10+00:00">',
             $html,
         );
+        static::assertStringContainsString('<meta name="twitter:card" content="summary">', $html);
     }
 
     #[Test]
