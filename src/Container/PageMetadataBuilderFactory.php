@@ -11,9 +11,9 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * Builds the PageMetadataBuilder from "contenir_resource.base_url" and
- * "contenir_resource.description_length" (default 160), with the
- * ImageUrlResolverInterface service.
+ * Builds the PageMetadataBuilder from "contenir_resource.base_url",
+ * "contenir_resource.description_length" (default 160) and
+ * "contenir_resource.site_name", with the ImageUrlResolverInterface service.
  *
  * @api
  */
@@ -31,6 +31,7 @@ final class PageMetadataBuilderFactory
             ServiceLocator::get($container, ImageUrlResolverInterface::class, ImageUrlResolverInterface::class),
             $config->optionalBaseUrl('base_url'),
             $config->positiveInt('description_length', default: 160),
+            $config->optionalString('site_name'),
         );
     }
 }

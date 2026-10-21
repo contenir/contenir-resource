@@ -26,6 +26,7 @@ All under `contenir_resource`; all optional.
 | `base_url` | none: the request origin | `PageMetadataBuilder`; an absolute http(s) URL, no query or fragment |
 | `image_base_url` | `base_url`, then the request origin | `PathImageUrlResolver` |
 | `description_length` | `160` | `PageMetadataBuilder` |
+| `site_name` | none | `PageMetadataBuilder`: `og:site_name` on every page |
 | `summary_length` | `249` | `ResourceSummary` |
 | `section_renderer` | none | `ResourceSummary`; a `SectionRendererInterface` service name |
 

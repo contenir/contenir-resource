@@ -29,7 +29,10 @@ final class MetadataFactoriesTest extends TestCase
         ]));
         $metadata = $builder->build(new FixedMetadata(description: str_repeat('a', times: 170)), 'https://s.test/a');
 
-        static::assertSame(['https://s.test/a', 160], [$metadata->url, mb_strlen((string) $metadata->description)]);
+        static::assertSame(
+            ['https://s.test/a', 160, null],
+            [$metadata->url, mb_strlen((string) $metadata->description), $metadata->siteName],
+        );
     }
 
     #[Test]
@@ -37,7 +40,11 @@ final class MetadataFactoriesTest extends TestCase
     {
         $builder = (new PageMetadataBuilderFactory())(new ArrayContainer([
             'config'                         => [
-                'contenir_resource' => ['base_url' => 'https://www.site.test', 'description_length' => 3],
+                'contenir_resource' => [
+                    'base_url'           => 'https://www.site.test',
+                    'description_length' => 3,
+                    'site_name'          => 'Site',
+                ],
             ],
             ImageUrlResolverInterface::class => new RecordingImageResolver(),
         ]));
@@ -51,8 +58,8 @@ final class MetadataFactoriesTest extends TestCase
         );
 
         static::assertSame(
-            ['https://www.site.test/about', 'one', 'https://www.site.test|i.jpg'],
-            [$metadata->url, $metadata->description, $metadata->image],
+            ['https://www.site.test/about', 'one', 'https://www.site.test|i.jpg', 'Site'],
+            [$metadata->url, $metadata->description, $metadata->image, $metadata->siteName],
         );
     }
 

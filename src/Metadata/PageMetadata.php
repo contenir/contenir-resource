@@ -25,7 +25,14 @@ final readonly class PageMetadata
     public const string TYPE = 'website';
 
     /**
-     * @param string $url The canonical URL, also used for og:url and twitter:url.
+     * @param string  $url         The canonical URL, also used for og:url and twitter:url.
+     * @param ?string $siteName    The site's name, for og:site_name.
+     * @param ?string $robots      The robots meta tag's content, such as "noindex, follow".
+     * @param ?string $imageAlt    What the image shows, for og:image:alt and twitter:image:alt.
+     * @param ?int    $imageWidth  The image's width in pixels; written with its height.
+     * @param ?int    $imageHeight The image's height in pixels; written with its width.
+     *
+     * @mago-expect lint:excessive-parameter-list Metadata is built with named arguments; all but the URL are optional.
      */
     public function __construct(
         public string $url,
@@ -33,6 +40,11 @@ final readonly class PageMetadata
         public ?string $description = null,
         public ?string $image = null,
         public ?DateTimeInterface $updated = null,
+        public ?string $siteName = null,
+        public ?string $robots = null,
+        public ?string $imageAlt = null,
+        public ?int $imageWidth = null,
+        public ?int $imageHeight = null,
     ) {}
 
     /**
@@ -64,6 +76,14 @@ final readonly class PageMetadata
             ],
         ];
 
+        if (null !== $this->siteName) {
+            $tags[] = ['attribute' => 'property', 'key' => 'og:site_name', 'content' => $this->siteName];
+        }
+
+        if (null !== $this->robots) {
+            $tags[] = ['attribute' => 'name', 'key' => 'robots', 'content' => $this->robots];
+        }
+
         if (null !== $this->title) {
             $tags[] = ['attribute' => 'property', 'key' => 'og:title', 'content' => $this->title];
             $tags[] = ['attribute' => 'name', 'key' => 'twitter:title', 'content' => $this->title];
@@ -76,8 +96,7 @@ final readonly class PageMetadata
         }
 
         if (null !== $this->image) {
-            $tags[] = ['attribute' => 'property', 'key' => 'og:image', 'content' => $this->image];
-            $tags[] = ['attribute' => 'name', 'key' => 'twitter:image', 'content' => $this->image];
+            $tags = [...$tags, ...$this->imageTags($this->image)];
         }
 
         if (null !== $this->updated) {
@@ -86,6 +105,32 @@ final readonly class PageMetadata
                 'key'       => 'og:updated_time',
                 'content'   => $this->updated->format(DATE_ATOM),
             ];
+        }
+
+        return $tags;
+    }
+
+    /**
+     * The image's tags: its URL, its size when both sides are known, and
+     * what it shows.
+     *
+     * @return list<MetaTag>
+     */
+    private function imageTags(string $image): array
+    {
+        $tags = [['attribute' => 'property', 'key' => 'og:image', 'content' => $image]];
+        if (null !== $this->imageWidth && null !== $this->imageHeight) {
+            $tags[] = ['attribute' => 'property', 'key' => 'og:image:width', 'content' => (string) $this->imageWidth];
+            $tags[] = ['attribute' => 'property', 'key' => 'og:image:height', 'content' => (string) $this->imageHeight];
+        }
+
+        if (null !== $this->imageAlt) {
+            $tags[] = ['attribute' => 'property', 'key' => 'og:image:alt', 'content' => $this->imageAlt];
+        }
+
+        $tags[] = ['attribute' => 'name', 'key' => 'twitter:image', 'content' => $image];
+        if (null !== $this->imageAlt) {
+            $tags[] = ['attribute' => 'name', 'key' => 'twitter:image:alt', 'content' => $this->imageAlt];
         }
 
         return $tags;

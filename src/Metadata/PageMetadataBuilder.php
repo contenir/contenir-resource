@@ -31,11 +31,13 @@ final readonly class PageMetadataBuilder
     /**
      * @param string|null $baseUrl           The site's base URL, for example "https://www.example.com".
      * @param int         $descriptionLength The maximum description length, in characters.
+     * @param string|null $siteName          The site's name, for og:site_name on every page.
      */
     public function __construct(
         private ImageUrlResolverInterface $images = new PathImageUrlResolver(),
         private ?string $baseUrl = null,
         private int $descriptionLength = 160,
+        private ?string $siteName = null,
     ) {}
 
     private static function nonEmpty(?string $value): ?string
@@ -77,6 +79,7 @@ final readonly class PageMetadataBuilder
                 : self::nonEmpty(MetaText::summarise($description, $this->descriptionLength)),
             image: null === $image ? null : $this->images->resolve(trim($image), $origin),
             updated: $resource->getMetaModified() ?? $resource->getMetaPublish(),
+            siteName: self::nonEmpty($this->siteName),
         );
     }
 }
