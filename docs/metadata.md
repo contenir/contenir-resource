@@ -11,6 +11,10 @@ into a `PageMetadata`:
 | `description` | `getMetaDescription()`, cleaned (`MetaText::clean()`) and cut at a word break to `description_length` characters |
 | `image` | `getMetaImage()`, resolved by the `ImageUrlResolverInterface` |
 | `updated` | `getMetaModified()`, or else `getMetaPublish()` |
+| `siteName` | `contenir_resource.site_name`, on every page |
+
+`PageMetadata` also takes `robots`, `imageAlt`, `imageWidth` and `imageHeight`, which a site sets itself (for example
+from contenir/seo's settings and the image's asset record); the builder leaves them unset.
 
 Blank values are left out, and the tags that depend on them are not emitted.
 
@@ -36,8 +40,8 @@ $renderer->renderTags($metadata); // the same without <title>
 ```
 
 Output it unescaped in `<head>` (for example `{{ meta|raw }}` in Twig). Open Graph tags use `property`, and Twitter
-tags use `name`. `twitter:card` is `summary_large_image` when there is an image, and `summary` otherwise. The tags, in
-order:
+tags use `name`. `twitter:card` is `summary_large_image` when there is an image, and `summary` otherwise. The image's
+width and height are written only when both are known. The tags, in order, with every value set:
 
 ```html
 <title>About us</title>
@@ -46,13 +50,19 @@ order:
 <meta property="og:url" content="https://www.example.com/about">
 <meta name="twitter:url" content="https://www.example.com/about">
 <meta name="twitter:card" content="summary_large_image">
+<meta property="og:site_name" content="Example">
+<meta name="robots" content="noindex, follow">
 <meta property="og:title" content="About us">
 <meta name="twitter:title" content="About us">
 <meta name="description" content="Who we are">
 <meta property="og:description" content="Who we are">
 <meta name="twitter:description" content="Who we are">
 <meta property="og:image" content="https://cdn.example.com/about.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Our team">
 <meta name="twitter:image" content="https://cdn.example.com/about.jpg">
+<meta name="twitter:image:alt" content="Our team">
 <meta property="og:updated_time" content="2024-01-02T03:04:05+00:00">
 ```
 

@@ -11,9 +11,22 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+use function array_slice;
+
 #[Group('unit')]
 final class PageMetadataTest extends TestCase
 {
+    /**
+     * @return array<string, array{int|null, int|null}>
+     */
+    public static function halfKnownSizeProvider(): array
+    {
+        return [
+            'only the width'  => [1200, null],
+            'only the height' => [null, 630],
+        ];
+    }
+
     /**
      * @return array<string, array{string|null, string}>
      */
@@ -23,6 +36,26 @@ final class PageMetadataTest extends TestCase
             'with an image'    => ['https://example.com/i.jpg', 'summary_large_image'],
             'without an image' => [null, 'summary'],
         ];
+    }
+
+    #[DataProvider('halfKnownSizeProvider')]
+    #[Test]
+    public function aHalfKnownSizeIsLeftOut(?int $width, ?int $height): void
+    {
+        $metadata = new PageMetadata(
+            url: 'https://example.com/a',
+            image: 'https://example.com/i.jpg',
+            imageWidth: $width,
+            imageHeight: $height,
+        );
+
+        static::assertSame(
+            [
+                ['attribute' => 'property', 'key' => 'og:image', 'content' => 'https://example.com/i.jpg'],
+                ['attribute' => 'name', 'key' => 'twitter:image', 'content' => 'https://example.com/i.jpg'],
+            ],
+            array_slice($metadata->getMetaTags(), offset: 4),
+        );
     }
 
     #[Test]
@@ -56,6 +89,19 @@ final class PageMetadataTest extends TestCase
     }
 
     #[Test]
+    public function imageDetailsWithoutAnImageAreLeftOut(): void
+    {
+        $metadata = new PageMetadata(
+            url: 'https://example.com/a',
+            imageAlt: 'Alt',
+            imageWidth: 1,
+            imageHeight: 1,
+        );
+
+        static::assertCount(4, $metadata->getMetaTags());
+    }
+
+    #[Test]
     public function onlyTheTypeUrlAndCardTagsAreSetWithoutValues(): void
     {
         static::assertSame(
@@ -75,6 +121,38 @@ final class PageMetadataTest extends TestCase
         static::assertSame(
             [['rel' => 'canonical', 'href' => 'https://example.com/a']],
             (new PageMetadata('https://example.com/a'))->getLinks(),
+        );
+    }
+
+    #[Test]
+    public function theSiteNameRobotsAndImageDetailsFollowTheCard(): void
+    {
+        $metadata = new PageMetadata(
+            url: 'https://example.com/a',
+            image: 'https://example.com/i.jpg',
+            siteName: 'Example',
+            robots: 'noindex, follow',
+            imageAlt: 'The workshop',
+            imageWidth: 1200,
+            imageHeight: 630,
+        );
+
+        static::assertSame(
+            [
+                ['attribute' => 'property', 'key' => 'og:type', 'content' => 'website'],
+                ['attribute' => 'property', 'key' => 'og:url', 'content' => 'https://example.com/a'],
+                ['attribute' => 'name', 'key' => 'twitter:url', 'content' => 'https://example.com/a'],
+                ['attribute' => 'name', 'key' => 'twitter:card', 'content' => 'summary_large_image'],
+                ['attribute' => 'property', 'key' => 'og:site_name', 'content' => 'Example'],
+                ['attribute' => 'name', 'key' => 'robots', 'content' => 'noindex, follow'],
+                ['attribute' => 'property', 'key' => 'og:image', 'content' => 'https://example.com/i.jpg'],
+                ['attribute' => 'property', 'key' => 'og:image:width', 'content' => '1200'],
+                ['attribute' => 'property', 'key' => 'og:image:height', 'content' => '630'],
+                ['attribute' => 'property', 'key' => 'og:image:alt', 'content' => 'The workshop'],
+                ['attribute' => 'name', 'key' => 'twitter:image', 'content' => 'https://example.com/i.jpg'],
+                ['attribute' => 'name', 'key' => 'twitter:image:alt', 'content' => 'The workshop'],
+            ],
+            $metadata->getMetaTags(),
         );
     }
 

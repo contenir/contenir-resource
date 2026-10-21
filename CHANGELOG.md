@@ -4,9 +4,16 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased] - 2026-10-19
+## [Unreleased] - 2026-10-21
 
 ### Added
+
+- `og:site_name`, a `robots` meta tag, and the image's `og:image:width`, `og:image:height`, `og:image:alt` and
+  `twitter:image:alt`, from new optional `PageMetadata` values: `siteName`, `robots`, `imageAlt`, `imageWidth` and
+  `imageHeight`. The size is written only when both sides are known. `PageMetadataBuilder` gives every page the site
+  name in `contenir_resource.site_name`. The SEO add-on's head fixes reach laminas-mvc sites through
+  contenir/seo-laminas-mvc's `seo()` helper; these values let a site on this package write them through
+  `PageMetadata` itself.
 
 - A `twitter:card` tag: `summary_large_image` when the page has an image, and `summary` otherwise, so shared images
   show large.

@@ -182,6 +182,19 @@ final class PageMetadataBuilderTest extends TestCase
     }
 
     #[Test]
+    public function theSiteNameIsGivenToEveryPage(): void
+    {
+        static::assertSame(
+            ['Example', null, null],
+            [
+                (new PageMetadataBuilder(siteName: 'Example'))->build(new FixedMetadata(), 'https://s.test/')->siteName,
+                (new PageMetadataBuilder(siteName: '  '))->build(new FixedMetadata(), 'https://s.test/')->siteName,
+                (new PageMetadataBuilder())->build(new FixedMetadata(), 'https://s.test/')->siteName,
+            ],
+        );
+    }
+
+    #[Test]
     public function theTitleIsKeptAsIs(): void
     {
         $metadata = (new PageMetadataBuilder())->build(new FixedMetadata(title: 'About <us>'), 'https://s.test/');
