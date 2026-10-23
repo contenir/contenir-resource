@@ -126,4 +126,28 @@ final readonly class PageMetadata
                 : $tags
         );
     }
+
+    /**
+     * The same page at another path on its origin, such as an article's own
+     * address when it was requested through a listing's.
+     *
+     * @param string $path An absolute path, such as "/work/convoy".
+     */
+    public function withPath(string $path): self
+    {
+        return new self(
+            url: RequestOrigin::of($this->url) . $path,
+            title: $this->title,
+            description: $this->description,
+            image: $this->image,
+            updated: $this->updated,
+            siteName: $this->siteName,
+            robots: $this->robots,
+            imageAlt: $this->imageAlt,
+            imageWidth: $this->imageWidth,
+            imageHeight: $this->imageHeight,
+            type: $this->type,
+            published: $this->published,
+        );
+    }
 }

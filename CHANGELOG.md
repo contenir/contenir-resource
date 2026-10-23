@@ -26,6 +26,9 @@ adheres to [Semantic Versioning](https://semver.org/).
   `og:image:width` and `og:image:height`. `LocalImageSizeResolver` measures files under `contenir_resource.image_root`,
   and never outside it; a site whose images live elsewhere registers its own resolver.
 
+- `PageMetadata::withPath()`: the same page at another path on its origin, for a page whose canonical address is
+  not the one it was requested at, such as an article reached through a listing.
+
 - `contenir_resource.image_alt_from_title`, to use the page's title as the share image's alt text, and
   `contenir_resource.description_ellipsis`, to end a description cut short with, say, `…`
   (`MetaText::summarise()`'s new `$ellipsis`).
