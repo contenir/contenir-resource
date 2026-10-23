@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Contenir\Resource\Core\Metadata;
 
 use Contenir\Metadata\MetadataInterface;
+use Contenir\Resource\Core\Entity\AbstractResourceEntity;
 
-use function array_key_exists;
-use function is_array;
+use function in_array;
 use function is_string;
 use function parse_url;
 use function rtrim;
@@ -24,6 +24,9 @@ use const PHP_URL_PATH;
  * client controls. The query string, fragment and any user info are never
  * part of the canonical URL.
  *
+ * A resource whose type is one of the article types is an article: its
+ * og:type is "article", with its publish and change dates.
+ *
  * @api
  */
 final readonly class PageMetadataBuilder
@@ -32,12 +35,22 @@ final readonly class PageMetadataBuilder
      * @param string|null $baseUrl           The site's base URL, for example "https://www.example.com".
      * @param int         $descriptionLength The maximum description length, in characters.
      * @param string|null $siteName          The site's name, for og:site_name on every page.
+     * @param list<string> $articleTypes      The resource types that are articles.
+     * @param ImageSizeResolverInterface|null $imageSizes Measures the share image, for its width and height.
+     * @param bool        $imageAltFromTitle  Whether the share image's alt text is the page's title.
+     * @param string      $descriptionEllipsis What a description cut short ends with, such as "…".
+     *
+     * @mago-expect lint:excessive-parameter-list The builder is configured with named arguments; all are optional.
      */
     public function __construct(
         private ImageUrlResolverInterface $images = new PathImageUrlResolver(),
         private ?string $baseUrl = null,
         private int $descriptionLength = 160,
         private ?string $siteName = null,
+        private array $articleTypes = [],
+        private ?ImageSizeResolverInterface $imageSizes = null,
+        private bool $imageAltFromTitle = false,
+        private string $descriptionEllipsis = '',
     ) {}
 
     private static function nonEmpty(?string $value): ?string
@@ -46,40 +59,43 @@ final readonly class PageMetadataBuilder
     }
 
     /**
-     * The scheme, host and port of a URL, or '' when it has no host.
-     */
-    private static function origin(string $url): string
-    {
-        $parts = parse_url($url);
-        if (! is_array($parts) || ! array_key_exists('host', $parts)) {
-            return '';
-        }
-
-        $scheme = $parts['scheme'] ?? 'http';
-        $port   = array_key_exists('port', $parts) ? ":{$parts['port']}" : '';
-
-        return "{$scheme}://{$parts['host']}{$port}";
-    }
-
-    /**
      * @param string $requestUrl The absolute URL the page was requested at.
      */
     public function build(MetadataInterface $resource, string $requestUrl): PageMetadata
     {
-        $origin      = null === $this->baseUrl ? self::origin($requestUrl) : rtrim($this->baseUrl, characters: '/');
+        $origin = null === $this->baseUrl
+            ? RequestOrigin::of($requestUrl)
+            : rtrim($this->baseUrl, characters: '/');
         $path        = parse_url($requestUrl, PHP_URL_PATH);
+        $title       = self::nonEmpty($resource->getMetaTitle());
         $description = self::nonEmpty($resource->getMetaDescription());
-        $image       = self::nonEmpty($resource->getMetaImage());
+        $image       = ShareImage::resolve($resource->getMetaImage(), $origin, $this->images, $this->imageSizes);
+        $article     = $this->isArticle($resource);
 
         return new PageMetadata(
             url: $origin . (is_string($path) ? $path : '/'),
-            title: self::nonEmpty($resource->getMetaTitle()),
+            title: $title,
             description: null === $description
                 ? null
-                : self::nonEmpty(MetaText::summarise($description, $this->descriptionLength)),
-            image: null === $image ? null : $this->images->resolve(trim($image), $origin),
+                : self::nonEmpty(MetaText::summarise(
+                    $description,
+                    $this->descriptionLength,
+                    $this->descriptionEllipsis,
+                )),
+            image: $image?->url,
             updated: $resource->getMetaModified() ?? $resource->getMetaPublish(),
             siteName: self::nonEmpty($this->siteName),
+            imageAlt: null !== $image && $this->imageAltFromTitle ? $title : null,
+            imageWidth: $image?->width,
+            imageHeight: $image?->height,
+            type: $article ? PageMetadata::ARTICLE : PageMetadata::TYPE,
+            published: $article ? $resource->getMetaPublish() : null,
         );
+    }
+
+    private function isArticle(MetadataInterface $resource): bool
+    {
+        return $resource instanceof AbstractResourceEntity
+            && in_array($resource->getType(), $this->articleTypes, strict: true);
     }
 }

@@ -18,7 +18,22 @@ adheres to [Semantic Versioning](https://semver.org/).
 - A `twitter:card` tag: `summary_large_image` when the page has an image, and `summary` otherwise, so shared images
   show large.
 
+- Articles: a resource whose type is in `contenir_resource.article_types` gets `og:type` `article`, with
+  `article:published_time` and, when it changed after it was published, `article:modified_time`. `PageMetadata`
+  takes the type and the publish date as new optional `type` and `published` values.
+
+- The share image's real size: `PageMetadataBuilder` measures it with an `ImageSizeResolverInterface` and writes
+  `og:image:width` and `og:image:height`. `LocalImageSizeResolver` measures files under `contenir_resource.image_root`,
+  and never outside it; a site whose images live elsewhere registers its own resolver.
+
+- `contenir_resource.image_alt_from_title`, to use the page's title as the share image's alt text, and
+  `contenir_resource.description_ellipsis`, to end a description cut short with, say, `…`
+  (`MetaText::summarise()`'s new `$ellipsis`).
+
 ### Fixed
+
+- `MetaText::clean()` leaves a space where a paragraph, line break, list item, heading or other block ends, so a
+  description taken from `<p>One</p><p>Two</p>` reads "One Two", not "OneTwo".
 
 - `og:updated_time` is the date the page last changed (`getMetaModified()`), falling back to `getMetaPublish()`. It
   was the publish date whenever one was set, which for a resource is when it was created.

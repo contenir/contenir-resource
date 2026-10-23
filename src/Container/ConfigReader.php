@@ -126,4 +126,15 @@ final readonly class ConfigReader
     {
         return $this->optionalString($key) ?? $default;
     }
+
+    /**
+     * The section's values as configured, for a reader that checks its own
+     * shapes.
+     *
+     * @return array<array-key, mixed>
+     */
+    public function values(): array
+    {
+        return $this->values;
+    }
 }
