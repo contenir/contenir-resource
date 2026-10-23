@@ -49,6 +49,7 @@ final class LocalImageSizeResolverTest extends TestCase
             'a missing file'          => ['/library/missing.png'],
             'a directory'             => ['/library'],
             'not an image'            => ['/library/notes.txt'],
+            'a scheme in capitals'    => ['DATA:hero.png'],
         ];
     }
 
@@ -104,6 +105,7 @@ final class LocalImageSizeResolverTest extends TestCase
         file_put_contents("{$this->root}/library/notes.txt", data: 'not an image');
         file_put_contents("{$this->root}/library/pixel.png", base64_decode(self::PIXEL, strict: true));
         file_put_contents($this->outside, base64_decode(self::PNG, strict: true));
+        file_put_contents("{$this->root}/DATA:hero.png", base64_decode(self::PNG, strict: true));
     }
 
     protected function tearDown(): void
@@ -112,6 +114,7 @@ final class LocalImageSizeResolverTest extends TestCase
             "{$this->root}/library/hero.png",
             "{$this->root}/library/notes.txt",
             "{$this->root}/library/pixel.png",
+            "{$this->root}/DATA:hero.png",
             $this->outside,
         ];
         foreach ($files as $file) {
