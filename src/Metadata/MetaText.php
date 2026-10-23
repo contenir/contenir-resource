@@ -17,6 +17,7 @@ use function mb_substr;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
+use function rtrim;
 use function strip_tags;
 use function trim;
 
@@ -35,10 +36,18 @@ final class MetaText
     /**
      * Decode entities, strip markup, turn typographic quotes into plain
      * ones and collapse every run of whitespace (non-breaking and other
-     * Unicode spaces included) into one space.
+     * Unicode spaces included) into one space. A line break, or the end of a
+     * paragraph, heading, list item or other block, leaves a space, so the
+     * words either side of it do not run together.
      */
     public static function clean(string $text): string
     {
+        $text =
+            preg_replace(
+                '~<br\s*/?>|</(?:p|div|li|h[1-6]|blockquote|dd|dt|td|th|tr|section|article|figcaption)\s*>~i',
+                replacement: ' $0',
+                subject: $text,
+            ) ?? $text;
         $text = strip_tags(html_entity_decode($text, ENT_QUOTES | ENT_HTML5, encoding: 'UTF-8'));
         $text = preg_replace(
             ['/[\s\x{00A0}\x{2000}-\x{200A}\x{202F}]+/u', '/[\x{2018}\x{2019}]/u', '/[\x{201C}\x{201D}]/u'],
@@ -78,8 +87,10 @@ final class MetaText
     /**
      * The cleaned text, cut to at most $length characters at the last word
      * break, or mid-word when the first $length characters hold no break.
+     * Text that is cut loses any punctuation it would end on and gains the
+     * ellipsis, such as "…", which is not counted in $length.
      */
-    public static function summarise(string $text, int $length = 160): string
+    public static function summarise(string $text, int $length = 160, string $ellipsis = ''): string
     {
         $text = self::clean($text);
         if (mb_strlen($text) <= $length) {
@@ -87,11 +98,11 @@ final class MetaText
         }
 
         $matches = [];
-        if (1 !== preg_match("/^.{0,{$length}}(?=\\s)/su", $text, $matches)) {
-            return mb_substr($text, start: 0, length: $length);
-        }
+        $cut     = 1 === preg_match("/^.{0,{$length}}(?=\\s)/su", $text, $matches)
+            ? $matches[0] ?? ''
+            : mb_substr($text, start: 0, length: $length);
 
-        return $matches[0] ?? '';
+        return '' === $ellipsis ? $cut : rtrim($cut, characters: ' ,.;:') . $ellipsis;
     }
 
     /**

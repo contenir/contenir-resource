@@ -20,9 +20,15 @@ use const DATE_ATOM;
 final readonly class PageMetadata
 {
     /**
-     * The og:type of every page.
+     * The og:type of a page that is not an article.
      */
     public const string TYPE = 'website';
+
+    /**
+     * The og:type of an article, which also gets article:published_time and
+     * article:modified_time.
+     */
+    public const string ARTICLE = 'article';
 
     /**
      * @param string  $url         The canonical URL, also used for og:url and twitter:url.
@@ -31,6 +37,8 @@ final readonly class PageMetadata
      * @param ?string $imageAlt    What the image shows, for og:image:alt and twitter:image:alt.
      * @param ?int    $imageWidth  The image's width in pixels; written with its height.
      * @param ?int    $imageHeight The image's height in pixels; written with its width.
+     * @param string  $type        The og:type: TYPE, ARTICLE or another Open Graph type.
+     * @param ?DateTimeInterface $published When an article was first published, for article:published_time.
      *
      * @mago-expect lint:excessive-parameter-list Metadata is built with named arguments; all but the URL are optional.
      */
@@ -45,6 +53,8 @@ final readonly class PageMetadata
         public ?string $imageAlt = null,
         public ?int $imageWidth = null,
         public ?int $imageHeight = null,
+        public string $type = self::TYPE,
+        public ?DateTimeInterface $published = null,
     ) {}
 
     /**
@@ -66,7 +76,7 @@ final readonly class PageMetadata
     public function getMetaTags(): array
     {
         $tags = [
-            ['attribute' => 'property', 'key' => 'og:type', 'content' => self::TYPE],
+            ['attribute' => 'property', 'key' => 'og:type', 'content' => $this->type],
             ['attribute' => 'property', 'key' => 'og:url', 'content' => $this->url],
             ['attribute' => 'name', 'key' => 'twitter:url', 'content' => $this->url],
             [
@@ -96,7 +106,10 @@ final readonly class PageMetadata
         }
 
         if (null !== $this->image) {
-            $tags = [...$tags, ...$this->imageTags($this->image)];
+            $tags = [
+                ...$tags,
+                ...PageMetadataTags::image($this->image, $this->imageWidth, $this->imageHeight, $this->imageAlt),
+            ];
         }
 
         if (null !== $this->updated) {
@@ -107,32 +120,34 @@ final readonly class PageMetadata
             ];
         }
 
-        return $tags;
+        return (
+            self::ARTICLE === $this->type
+                ? [...$tags, ...PageMetadataTags::article($this->published, $this->updated)]
+                : $tags
+        );
     }
 
     /**
-     * The image's tags: its URL, its size when both sides are known, and
-     * what it shows.
+     * The same page at another path on its origin, such as an article's own
+     * address when it was requested through a listing's.
      *
-     * @return list<MetaTag>
+     * @param string $path An absolute path, such as "/work/convoy".
      */
-    private function imageTags(string $image): array
+    public function withPath(string $path): self
     {
-        $tags = [['attribute' => 'property', 'key' => 'og:image', 'content' => $image]];
-        if (null !== $this->imageWidth && null !== $this->imageHeight) {
-            $tags[] = ['attribute' => 'property', 'key' => 'og:image:width', 'content' => (string) $this->imageWidth];
-            $tags[] = ['attribute' => 'property', 'key' => 'og:image:height', 'content' => (string) $this->imageHeight];
-        }
-
-        if (null !== $this->imageAlt) {
-            $tags[] = ['attribute' => 'property', 'key' => 'og:image:alt', 'content' => $this->imageAlt];
-        }
-
-        $tags[] = ['attribute' => 'name', 'key' => 'twitter:image', 'content' => $image];
-        if (null !== $this->imageAlt) {
-            $tags[] = ['attribute' => 'name', 'key' => 'twitter:image:alt', 'content' => $this->imageAlt];
-        }
-
-        return $tags;
+        return new self(
+            url: RequestOrigin::of($this->url) . $path,
+            title: $this->title,
+            description: $this->description,
+            image: $this->image,
+            updated: $this->updated,
+            siteName: $this->siteName,
+            robots: $this->robots,
+            imageAlt: $this->imageAlt,
+            imageWidth: $this->imageWidth,
+            imageHeight: $this->imageHeight,
+            type: $this->type,
+            published: $this->published,
+        );
     }
 }

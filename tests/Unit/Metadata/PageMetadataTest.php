@@ -59,6 +59,44 @@ final class PageMetadataTest extends TestCase
     }
 
     #[Test]
+    public function aPageAtAnotherPathKeepsItsOriginAndEveryOtherValue(): void
+    {
+        $published = new DateTimeImmutable('2024-01-30');
+        $metadata  = new PageMetadata(
+            'https://example.com:8080/work/convoy/commercial?page=2',
+            title: 'Convoy',
+            description: 'A service station.',
+            image: 'https://example.com/i.jpg',
+            updated: $published,
+            siteName: 'Example',
+            robots: 'noindex',
+            imageAlt: 'Convoy',
+            imageWidth: 1200,
+            imageHeight: 630,
+            type: PageMetadata::ARTICLE,
+            published: $published,
+        );
+
+        static::assertEquals(
+            new PageMetadata(
+                'https://example.com:8080/work/convoy',
+                title: 'Convoy',
+                description: 'A service station.',
+                image: 'https://example.com/i.jpg',
+                updated: $published,
+                siteName: 'Example',
+                robots: 'noindex',
+                imageAlt: 'Convoy',
+                imageWidth: 1200,
+                imageHeight: 630,
+                type: PageMetadata::ARTICLE,
+                published: $published,
+            ),
+            $metadata->withPath('/work/convoy'),
+        );
+    }
+
+    #[Test]
     public function everyTagIsSetInTheLaminasMvcOrder(): void
     {
         $metadata = new PageMetadata(

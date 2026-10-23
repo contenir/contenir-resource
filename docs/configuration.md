@@ -27,6 +27,10 @@ All under `contenir_resource`; all optional.
 | `image_base_url` | `base_url`, then the request origin | `PathImageUrlResolver` |
 | `description_length` | `160` | `PageMetadataBuilder` |
 | `site_name` | none | `PageMetadataBuilder`: `og:site_name` on every page |
+| `description_ellipsis` | none | `PageMetadataBuilder`: what a description cut short ends with, such as `…` |
+| `article_types` | none | `PageMetadataBuilder`: the resource types whose pages are articles, such as `['project', 'news']` |
+| `image_alt_from_title` | `false` | `PageMetadataBuilder`: whether the share image's alt text is the page's title |
+| `image_root` | none | `PageMetadataBuilder`: the directory share image paths are measured under, usually the web root; an `ImageSizeResolverInterface` service takes its place |
 | `summary_length` | `249` | `ResourceSummary` |
 | `section_renderer` | none | `ResourceSummary`; a `SectionRendererInterface` service name |
 

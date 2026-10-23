@@ -12,9 +12,23 @@ into a `PageMetadata`:
 | `image` | `getMetaImage()`, resolved by the `ImageUrlResolverInterface` |
 | `updated` | `getMetaModified()`, or else `getMetaPublish()` |
 | `siteName` | `contenir_resource.site_name`, on every page |
+| `type` | `article` for a resource whose type is in `article_types`, and `website` otherwise |
+| `published` | `getMetaPublish()`, for an article |
+| `imageWidth`, `imageHeight` | The share image's size, measured by the `ImageSizeResolverInterface`, when it could be measured |
+| `imageAlt` | The page's title, with `image_alt_from_title` on |
 
-`PageMetadata` also takes `robots`, `imageAlt`, `imageWidth` and `imageHeight`, which a site sets itself (for example
-from contenir/seo's settings and the image's asset record); the builder leaves them unset.
+A description cut short ends with `description_ellipsis`, when set, in place of any punctuation it would have ended on.
+
+`PageMetadata` also takes `robots`, which a site sets itself (for example from contenir/seo's settings); the builder
+leaves it unset.
+
+### Measuring the share image
+
+`ImageSizeResolverInterface::size($path)` gives the width and height of the path `getMetaImage()` returned, or null.
+With `image_root` set, `LocalImageSizeResolver` measures files under that directory: URLs, protocol-relative paths
+and anything resolving outside the root (`..`, or a symlink out of it) are not measured, so the size never comes from
+a file the site does not serve. A site whose images live elsewhere, such as object storage, registers its own
+`ImageSizeResolverInterface` service, which the factory prefers. Without either, the size is left out.
 
 Blank values are left out, and the tags that depend on them are not emitted.
 
@@ -41,7 +55,8 @@ $renderer->renderTags($metadata); // the same without <title>
 
 Output it unescaped in `<head>` (for example `{{ meta|raw }}` in Twig). Open Graph tags use `property`, and Twitter
 tags use `name`. `twitter:card` is `summary_large_image` when there is an image, and `summary` otherwise. The image's
-width and height are written only when both are known. The tags, in order, with every value set:
+width and height are written only when both are known. An article's `og:type` is `article`, and it adds
+`article:published_time` and, when the page changed after it was published, `article:modified_time`. The tags, in order, with every value set:
 
 ```html
 <title>About us</title>
@@ -70,6 +85,6 @@ width and height are written only when both are known. The tags, in order, with 
 
 | Method | Does |
 | --- | --- |
-| `clean($html)` | Decodes entities, strips markup, straightens typographic quotes, collapses all whitespace |
-| `summarise($text, $length = 160)` | `clean()`, then cut at the last word break within `$length` characters (mid-word if there is none) |
+| `clean($html)` | Decodes entities, strips markup (leaving a space where a paragraph, line or other block ends), straightens typographic quotes, collapses all whitespace |
+| `summarise($text, $length = 160, $ellipsis = '')` | `clean()`, then cut at the last word break within `$length` characters (mid-word if there is none); text that is cut drops trailing punctuation and gains `$ellipsis` |
 | `keywords($text, $max = 25, $minWordLength = 4, $bannedWords = [])` | The most frequent words longer than `$minWordLength` characters |

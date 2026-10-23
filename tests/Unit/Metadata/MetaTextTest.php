@@ -35,6 +35,23 @@ final class MetaTextTest extends TestCase
             'curly double quotes'    => ["\u{201C}hi\u{201D}", '"hi"'],
             'trimmed'                => ['  padded  ', 'padded'],
             'empty'                  => ['', ''],
+            'paragraphs kept apart'  => ['<p>One</p><p>Two</p>', 'One Two'],
+            'line breaks kept apart' => ['a<br>b<br/>c<BR />d', 'a b c d'],
+            'list items kept apart'  => ['<ul><li>a</li><li>b</li></ul>', 'a b'],
+            'headings kept apart'    => ['<h2>Title</h2>Copy', 'Title Copy'],
+        ];
+    }
+
+    /**
+     * @return array<string, array{string, int, string}>
+     */
+    public static function ellipsisProvider(): array
+    {
+        return [
+            'cut at a word break'        => ['one two three', 8, 'one two…'],
+            'trailing punctuation lost'  => ['one, two; three', 9, 'one, two…'],
+            'cut mid-word without break' => ['abcdefghij', 4, 'abcd…'],
+            'short text left alone'      => ['one two.', 20, 'one two.'],
         ];
     }
 
@@ -131,5 +148,12 @@ final class MetaTextTest extends TestCase
         $text = str_repeat('word ', times: 40);
 
         static::assertSame(rtrim(str_repeat('word ', times: 32)), MetaText::summarise($text));
+    }
+
+    #[Test]
+    #[DataProvider('ellipsisProvider')]
+    public function summariseEndsTextItCutsWithTheEllipsis(string $text, int $length, string $expected): void
+    {
+        static::assertSame($expected, MetaText::summarise($text, $length, ellipsis: '…'));
     }
 }
