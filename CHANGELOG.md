@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.0-RC4] - 2026-10-27
+
 ### Changed
 
 - `findActivePageByWorkflow()` finds a workflow's active page whether or not it is discoverable, taking the first
