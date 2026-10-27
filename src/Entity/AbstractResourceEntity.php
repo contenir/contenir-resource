@@ -224,6 +224,10 @@ abstract class AbstractResourceEntity implements MetadataInterface
         return ResourceStatus::Active === $this->status;
     }
 
+    /**
+     * Whether the resource is discoverable: listed in the sitemap and the site's own listings,
+     * and open to search engines. An undiscoverable resource keeps its address.
+     */
     public function isVisible(): bool
     {
         return true === $this->visible;

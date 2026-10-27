@@ -6,6 +6,13 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- `findActivePageByWorkflow()` finds a workflow's active page whether or not it is discoverable, taking the first
+  in sequence where there are several. The `visible` column now means discoverable: listed in the sitemap and the
+  site's own listings, and open to search engines. Menus come from contenir/contenir-navigation, so unlisting a
+  page no longer hides it from the code that finds it.
+
 ## [2.0.0-RC3] - 2026-10-23
 
 ### Added
