@@ -202,7 +202,7 @@ final class ResourceManagerTest extends TestCase
     }
 
     #[Test]
-    public function findsTheActiveVisiblePageOfAWorkflow(): void
+    public function findsTheActivePageOfAWorkflowFirstInSequence(): void
     {
         static::assertSame(
             [5, null],
@@ -211,6 +211,14 @@ final class ResourceManagerTest extends TestCase
                 $this->manager->findActivePageByWorkflow('shop'),
             ],
         );
+    }
+
+    #[Test]
+    public function findsTheActivePageOfAWorkflowThatIsNotDiscoverable(): void
+    {
+        $this->insertResource(['resource_id' => 6, 'slug' => 'gallery', 'workflow' => 'gallery', 'visible' => 0]);
+
+        static::assertSame(6, $this->manager->findActivePageByWorkflow('gallery')?->resourceId);
     }
 
     #[Test]

@@ -59,12 +59,14 @@ final readonly class ResourceManager implements ResourceManagerInterface
     #[Override]
     public function findActivePageByWorkflow(string $workflow): ?AbstractResourceEntity
     {
-        return $this->findOneBy([
-            'resourceTypeId' => ResourceRepository::ROOT_TYPE,
-            'workflow'       => $workflow,
-            'status'         => ResourceStatus::Active,
-            'visible'        => true,
-        ]);
+        return $this->findOneBy(
+            [
+                'resourceTypeId' => ResourceRepository::ROOT_TYPE,
+                'workflow'       => $workflow,
+                'status'         => ResourceStatus::Active,
+            ],
+            ['sequence' => 'ASC', 'resourceId' => 'ASC'],
+        );
     }
 
     #[Override]

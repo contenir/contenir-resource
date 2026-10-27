@@ -52,8 +52,8 @@ interface ResourceManagerInterface
     public function findActiveByWorkflow(string $workflow): ?AbstractResourceEntity;
 
     /**
-     * The active page resource with that workflow which is visible in
-     * navigation, or null.
+     * The active page resource with that workflow, discoverable or not, the
+     * first in sequence where there are several; or null.
      *
      * @throws DbModelException
      */
