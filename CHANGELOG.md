@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.0-RC6] - 2026-11-04
+
+### Added
+
+- `Metadata\PageOverrides`: a record's own title, description, image and image alt text for its page, such as a
+  share image an editor set for that record alone. `PageDefaults` takes them as `overrides`, and unlike its other
+  values, each wins over the resource's getters.
+
 ## [2.0.0-RC5] - 2026-11-04
 
 ### Added
