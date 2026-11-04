@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b2cd9a2c1fbd722dba4c0a5dea2705c9",
+    "content-hash": "455c79be3209e9c7ac7fe6c7aa4d1e56",
     "packages": [
         {
             "name": "brick/varexporter",
@@ -772,20 +772,23 @@
         },
         {
             "name": "contenir/contenir-preview",
-            "version": "0.1.x-dev",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/contenir/contenir-preview.git",
-                "reference": "6d11419093dc26c12c813d2115772c8340163686"
+                "reference": "d5edd89476e1c85213df49160a656a49a3229b39"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/contenir/contenir-preview/zipball/6d11419093dc26c12c813d2115772c8340163686",
-                "reference": "6d11419093dc26c12c813d2115772c8340163686",
+                "url": "https://api.github.com/repos/contenir/contenir-preview/zipball/d5edd89476e1c85213df49160a656a49a3229b39",
+                "reference": "d5edd89476e1c85213df49160a656a49a3229b39",
                 "shasum": ""
             },
             "require": {
+                "contenir/contenir-site-token": "^0.1",
+                "peptolab/phpdb-migration": "^0.2",
                 "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
+                "php-db/phpdb": "^0.6.0",
                 "psr/clock": "^1.0",
                 "psr/container": "^1.1 || ^2.0",
                 "psr/simple-cache": "^1.0 || ^2.0 || ^3.0"
@@ -793,20 +796,27 @@
             "require-dev": {
                 "contenir/contenir-qa-tools": "0.1.x-dev",
                 "infection/infection": "^0.35.6",
+                "php-db/phpdb-mysql": "0.5.x-dev",
+                "php-db/phpdb-sqlite": "0.3.x-dev",
                 "phpunit/phpunit": "^11.5"
             },
-            "default-branch": true,
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "0.3.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
-                    "Contenir\\Preview\\": "src/"
+                    "Contenir\\Preview\\": "src/",
+                    "Contenir\\Preview\\Schema\\": "schema/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "description": "The Contenir preview protocol: signed preview tokens from the CMS, their verification on a site, and the request-scoped context a site renders a previewed record from.",
+            "description": "The Contenir preview protocol: signed preview tokens from the CMS, their verification on a site, the request-scoped context a site renders a previewed record from, and shared preview links behind a code.",
             "keywords": [
                 "cms",
                 "contenir",
@@ -814,9 +824,9 @@
             ],
             "support": {
                 "issues": "https://github.com/contenir/contenir-preview/issues",
-                "source": "https://github.com/contenir/contenir-preview/tree/0.1.x"
+                "source": "https://github.com/contenir/contenir-preview/tree/v0.3.0"
             },
-            "time": "2026-10-18T01:29:59+00:00"
+            "time": "2026-10-29T03:14:14+00:00"
         },
         {
             "name": "contenir/contenir-qa-tools",
@@ -859,6 +869,59 @@
                 "source": "https://github.com/contenir/contenir-qa-tools"
             },
             "time": "2026-11-04T00:20:47+00:00"
+        },
+        {
+            "name": "contenir/contenir-site-token",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/contenir/contenir-site-token.git",
+                "reference": "8c016bf69206797f4a9fdc4ad82473ee240d6ac0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/contenir/contenir-site-token/zipball/8c016bf69206797f4a9fdc4ad82473ee240d6ac0",
+                "reference": "8c016bf69206797f4a9fdc4ad82473ee240d6ac0",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
+                "psr/clock": "^1.0",
+                "psr/simple-cache": "^1.0 || ^2.0 || ^3.0"
+            },
+            "require-dev": {
+                "contenir/contenir-qa-tools": "0.1.x-dev",
+                "infection/infection": "^0.35.6",
+                "phpunit/phpunit": "^11.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Contenir\\SiteToken\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Signed one-time tokens between the Contenir CMS and a site: compact HS256 tokens with key rotation, a bounded lifetime and single use, shared by the preview and cache protocols.",
+            "keywords": [
+                "JWS",
+                "cms",
+                "contenir",
+                "hmac",
+                "token"
+            ],
+            "support": {
+                "issues": "https://github.com/contenir/contenir-site-token/issues",
+                "source": "https://github.com/contenir/contenir-site-token/tree/v0.1.0"
+            },
+            "time": "2026-10-27T00:37:03+00:00"
         },
         {
             "name": "fidry/cpu-core-counter",
@@ -1568,6 +1631,70 @@
                 "source": "https://github.com/OndraM/ci-detector/tree/4.2.0"
             },
             "time": "2024-03-12T13:22:30+00:00"
+        },
+        {
+            "name": "peptolab/phpdb-migration",
+            "version": "v0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/peptolab/phpdb-migration.git",
+                "reference": "13c40547a0b187bea9842b3b50e58fb23537aedb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/peptolab/phpdb-migration/zipball/13c40547a0b187bea9842b3b50e58fb23537aedb",
+                "reference": "13c40547a0b187bea9842b3b50e58fb23537aedb",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.3",
+                "php-db/phpdb": "^0.6.0",
+                "symfony/console": "^7.2",
+                "symfony/string": "^7.2"
+            },
+            "require-dev": {
+                "php-db/phpdb-mysql": "0.5.x-dev",
+                "php-db/phpdb-qa-tools": "0.1.x-dev",
+                "phpunit/phpunit": "^11.5.42"
+            },
+            "suggest": {
+                "laminas/laminas-cli": "For CLI command integration",
+                "laminas/laminas-servicemanager": "For container-based factory integration (^3.0 || ^4.0)"
+            },
+            "type": "library",
+            "extra": {
+                "laminas": {
+                    "config-provider": "PhpDb\\Migration\\ConfigProvider"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PhpDb\\Migration\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Idempotent database migration engine for php-db/phpdb.",
+            "homepage": "https://github.com/peptolab/phpdb-migration",
+            "keywords": [
+                "database",
+                "migration",
+                "phpdb",
+                "schema"
+            ],
+            "support": {
+                "issues": "https://github.com/peptolab/phpdb-migration/issues",
+                "source": "https://github.com/peptolab/phpdb-migration"
+            },
+            "funding": [
+                {
+                    "url": "https://ko-fi.com/peptolab",
+                    "type": "ko_fi"
+                }
+            ],
+            "time": "2026-10-13T01:35:59+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -4824,7 +4951,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "contenir/contenir-preview": 20,
         "contenir/contenir-qa-tools": 20,
         "php-db/phpdb-sqlite": 20
     },
