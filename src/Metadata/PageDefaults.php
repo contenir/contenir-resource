@@ -12,7 +12,9 @@ use function trim;
  * What a site's section map adds to one resource's page: values for what
  * the resource's own getters leave empty, and what getters have no say in,
  * such as the robots directive, a canonical address and the schema type.
- * Every value is optional; null leaves the page as the getters make it.
+ * A record's own overrides, such as a share image set for it alone, win
+ * over the getters. Every value is optional; null leaves the page as the
+ * getters make it.
  *
  * @api
  */
@@ -33,6 +35,7 @@ final readonly class PageDefaults
         public ?string $canonical = null,
         public ?string $robots = null,
         public ?string $schema = null,
+        public PageOverrides $overrides = new PageOverrides(),
     ) {}
 
     private static function text(?string $value): ?string
@@ -57,21 +60,22 @@ final readonly class PageDefaults
 
     public function description(?string $own): ?string
     {
-        return self::text($own) ?? self::text($this->description);
+        return self::text($this->overrides->description) ?? self::text($own) ?? self::text($this->description);
     }
 
     public function image(?string $own): ?string
     {
-        return self::text($own) ?? self::text($this->image);
+        return self::text($this->overrides->image) ?? self::text($own) ?? self::text($this->image);
     }
 
     /**
-     * The share image's alt text: this default's, or else $fallback, such as
-     * the page's title for a site that takes alt text from titles.
+     * The share image's alt text: the record's own override, else this
+     * default's, else $fallback, such as the page's title for a site that
+     * takes alt text from titles.
      */
     public function imageAlt(?string $fallback): ?string
     {
-        return self::text($this->imageAlt) ?? $fallback;
+        return self::text($this->overrides->imageAlt) ?? self::text($this->imageAlt) ?? $fallback;
     }
 
     public function robots(): ?string
@@ -85,10 +89,11 @@ final readonly class PageDefaults
     }
 
     /**
-     * $own, a resource getter's value, unless it is empty; else this default's.
+     * The record's own override, else $own, a resource getter's value, unless
+     * it is empty, else this default's.
      */
     public function title(?string $own): ?string
     {
-        return self::text($own) ?? self::text($this->title);
+        return self::text($this->overrides->title) ?? self::text($own) ?? self::text($this->title);
     }
 }

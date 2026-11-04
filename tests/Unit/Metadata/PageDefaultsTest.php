@@ -6,6 +6,7 @@ namespace Contenir\Resource\Core\Tests\Unit\Metadata;
 
 use Contenir\Resource\Core\Metadata\PageDefaults;
 use Contenir\Resource\Core\Metadata\PageMetadataBuilder;
+use Contenir\Resource\Core\Metadata\PageOverrides;
 use Contenir\Resource\Core\Tests\TestAsset\Metadata\FixedMetadata;
 use Contenir\Resource\Core\Tests\TestAsset\Metadata\FixedPageDefaults;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -103,6 +104,20 @@ final class PageDefaultsTest extends TestCase
     }
 
     #[Test]
+    public function anOverriddenAltTextWinsOverTheTitle(): void
+    {
+        $page = (new PageMetadataBuilder(
+            imageAltFromTitle: true,
+            defaults: new FixedPageDefaults(new PageDefaults(overrides: new PageOverrides(imageAlt: 'Share alt'))),
+        ))->build(new FixedMetadata(
+            title: 'House',
+            image: '/house.jpg',
+        ), 'https://s.test/house');
+
+        static::assertSame('Share alt', $page->imageAlt);
+    }
+
+    #[Test]
     public function aPageWithoutAnImageHasNoAltText(): void
     {
         static::assertNull(
@@ -110,6 +125,27 @@ final class PageDefaultsTest extends TestCase
                 new FixedMetadata(),
                 'https://s.test/',
             )->imageAlt,
+        );
+    }
+
+    #[Test]
+    public function aRecordsOwnOverridesWinOverItsGettersAndTheDefaults(): void
+    {
+        $page = $this->builder(new PageDefaults(
+            ...self::FULL,
+            overrides: new PageOverrides('Share title', 'Share description.', '/share.jpg', 'Share alt'),
+        ))->build(
+            new FixedMetadata(
+                title: 'Own title',
+                description: 'Own description.',
+                image: '/own.jpg',
+            ),
+            'https://s.test/house',
+        );
+
+        static::assertSame(
+            ['Share title', 'Share description.', 'https://s.test/share.jpg', 'Share alt'],
+            [$page->title, $page->description, $page->image, $page->imageAlt],
         );
     }
 
@@ -124,6 +160,23 @@ final class PageDefaultsTest extends TestCase
         static::assertSame(
             [null, null, null, null, 'https://s.test/house', null, null],
             [$page->title, $page->description, $page->image, $page->imageAlt, $page->url, $page->robots, $page->schema],
+        );
+    }
+
+    #[Test]
+    public function blankOverridesLeaveTheGettersAndDefaultsAsTheyWere(): void
+    {
+        $page = $this->builder(new PageDefaults(
+            ...self::FULL,
+            overrides: new PageOverrides(' ', '', ' ', ' '),
+        ))->build(new FixedMetadata(
+            title: 'Own title',
+            image: '/own.jpg',
+        ), 'https://s.test/house');
+
+        static::assertSame(
+            ['Own title', 'Mapped description.', 'https://s.test/own.jpg', 'Mapped alt'],
+            [$page->title, $page->description, $page->image, $page->imageAlt],
         );
     }
 
@@ -147,6 +200,12 @@ final class PageDefaultsTest extends TestCase
             ['noindex, follow', 'https://s.test/work/house', 'CreativeWork'],
             [$page->robots, $page->url, $page->schema],
         );
+    }
+
+    #[Test]
+    public function defaultsHaveNoOverridesUnlessGiven(): void
+    {
+        static::assertEquals(new PageOverrides(), (new PageDefaults())->overrides);
     }
 
     #[Test]
