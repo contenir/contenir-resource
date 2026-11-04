@@ -89,6 +89,20 @@ final class PageDefaultsTest extends TestCase
     }
 
     #[Test]
+    public function aMappedAltTextWinsOverTheTitle(): void
+    {
+        $page = (new PageMetadataBuilder(
+            imageAltFromTitle: true,
+            defaults: new FixedPageDefaults(new PageDefaults(imageAlt: 'The house from the garden')),
+        ))->build(new FixedMetadata(
+            title: 'House',
+            image: '/house.jpg',
+        ), 'https://s.test/house');
+
+        static::assertSame('The house from the garden', $page->imageAlt);
+    }
+
+    #[Test]
     public function aPageWithoutAnImageHasNoAltText(): void
     {
         static::assertNull(
