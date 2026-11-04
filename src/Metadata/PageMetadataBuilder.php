@@ -96,7 +96,7 @@ final readonly class PageMetadataBuilder
             robots: $defaults->robots(),
             imageAlt: null === $image
                 ? null
-                : self::nonEmpty($defaults->imageAlt) ?? ($this->imageAltFromTitle ? $title : null),
+                : $defaults->imageAlt($this->imageAltFromTitle ? $title : null),
             imageWidth: $image?->width,
             imageHeight: $image?->height,
             type: $article ? PageMetadata::ARTICLE : PageMetadata::TYPE,
