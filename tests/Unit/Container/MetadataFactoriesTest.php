@@ -9,12 +9,15 @@ use Contenir\Resource\Core\Container\PathImageUrlResolverFactory;
 use Contenir\Resource\Core\Exception\ConfigurationException;
 use Contenir\Resource\Core\Metadata\ImageSizeResolverInterface;
 use Contenir\Resource\Core\Metadata\ImageUrlResolverInterface;
+use Contenir\Resource\Core\Metadata\PageDefaults;
+use Contenir\Resource\Core\Metadata\PageDefaultsInterface;
 use Contenir\Resource\Core\Metadata\PageMetadata;
 use Contenir\Resource\Core\Metadata\PathImageUrlResolver;
 use Contenir\Resource\Core\Tests\TestAsset\Container\ArrayContainer;
 use Contenir\Resource\Core\Tests\TestAsset\Entity\ResourceFactory;
 use Contenir\Resource\Core\Tests\TestAsset\Metadata\FixedImageSizes;
 use Contenir\Resource\Core\Tests\TestAsset\Metadata\FixedMetadata;
+use Contenir\Resource\Core\Tests\TestAsset\Metadata\FixedPageDefaults;
 use Contenir\Resource\Core\Tests\TestAsset\Metadata\RecordingImageResolver;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
@@ -133,6 +136,17 @@ final class MetadataFactoriesTest extends TestCase
             'config'                         => ['contenir_resource' => $settings],
             ImageUrlResolverInterface::class => new PathImageUrlResolver(),
         ]));
+    }
+
+    #[Test]
+    public function theBuilderTakesTheSitesPageDefaults(): void
+    {
+        $builder = (new PageMetadataBuilderFactory())(new ArrayContainer([
+            ImageUrlResolverInterface::class => new PathImageUrlResolver(),
+            PageDefaultsInterface::class     => new FixedPageDefaults(new PageDefaults(schema: 'CreativeWork')),
+        ]));
+
+        static::assertSame('CreativeWork', $builder->build(new FixedMetadata(), 'https://s.test/')->schema);
     }
 
     #[Test]
