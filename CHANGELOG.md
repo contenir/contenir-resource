@@ -6,6 +6,18 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.0-RC5] - 2026-11-04
+
+### Added
+
+- `Metadata\PageDefaultsInterface` and `Metadata\PageDefaults`: what a site's section map adds to a resource's page,
+  which the SEO packages implement from the `<seo>` blocks in admin.xml. `PageMetadataBuilder` takes them as its
+  optional last argument, and its factory takes them from the container when it has them. A resource's own getters
+  keep the last word on the title, description and image; the defaults fill only what they leave empty, and give
+  what getters have no say in: the robots directive, a canonical address (a path or an absolute URL) and the
+  page's schema.org type.
+- `PageMetadata::$schema`: the page's main schema.org type, which `withPath()` keeps.
+
 ## [2.0.0-RC4] - 2026-10-27
 
 ### Changed
