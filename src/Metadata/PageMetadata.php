@@ -39,6 +39,7 @@ final readonly class PageMetadata
      * @param ?int    $imageHeight The image's height in pixels; written with its width.
      * @param string  $type        The og:type: TYPE, ARTICLE or another Open Graph type.
      * @param ?DateTimeInterface $published When an article was first published, for article:published_time.
+     * @param ?string $schema      The page's main schema.org type, such as "CreativeWork", for the site's JSON-LD.
      *
      * @mago-expect lint:excessive-parameter-list Metadata is built with named arguments; all but the URL are optional.
      */
@@ -55,6 +56,7 @@ final readonly class PageMetadata
         public ?int $imageHeight = null,
         public string $type = self::TYPE,
         public ?DateTimeInterface $published = null,
+        public ?string $schema = null,
     ) {}
 
     /**
@@ -148,6 +150,7 @@ final readonly class PageMetadata
             imageHeight: $this->imageHeight,
             type: $this->type,
             published: $this->published,
+            schema: $this->schema,
         );
     }
 }

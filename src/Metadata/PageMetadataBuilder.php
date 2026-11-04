@@ -39,6 +39,7 @@ final readonly class PageMetadataBuilder
      * @param ImageSizeResolverInterface|null $imageSizes Measures the share image, for its width and height.
      * @param bool        $imageAltFromTitle  Whether the share image's alt text is the page's title.
      * @param string      $descriptionEllipsis What a description cut short ends with, such as "…".
+     * @param PageDefaultsInterface|null $defaults What the site's section map adds; a resource's getters keep the last word.
      *
      * @mago-expect lint:excessive-parameter-list The builder is configured with named arguments; all are optional.
      */
@@ -51,6 +52,7 @@ final readonly class PageMetadataBuilder
         private ?ImageSizeResolverInterface $imageSizes = null,
         private bool $imageAltFromTitle = false,
         private string $descriptionEllipsis = '',
+        private ?PageDefaultsInterface $defaults = null,
     ) {}
 
     private static function nonEmpty(?string $value): ?string
@@ -67,13 +69,19 @@ final readonly class PageMetadataBuilder
             ? RequestOrigin::of($requestUrl)
             : rtrim($this->baseUrl, characters: '/');
         $path        = parse_url($requestUrl, PHP_URL_PATH);
-        $title       = self::nonEmpty($resource->getMetaTitle());
-        $description = self::nonEmpty($resource->getMetaDescription());
-        $image       = ShareImage::resolve($resource->getMetaImage(), $origin, $this->images, $this->imageSizes);
-        $article     = $this->isArticle($resource);
+        $defaults    = $this->defaults?->for($resource) ?? new PageDefaults();
+        $title       = $defaults->title($resource->getMetaTitle());
+        $description = $defaults->description($resource->getMetaDescription());
+        $image       = ShareImage::resolve(
+            $defaults->image($resource->getMetaImage()),
+            $origin,
+            $this->images,
+            $this->imageSizes,
+        );
+        $article = $this->isArticle($resource);
 
         return new PageMetadata(
-            url: $origin . (is_string($path) ? $path : '/'),
+            url: $defaults->canonicalOn($origin) ?? $origin . (is_string($path) ? $path : '/'),
             title: $title,
             description: null === $description
                 ? null
@@ -85,11 +93,15 @@ final readonly class PageMetadataBuilder
             image: $image?->url,
             updated: $resource->getMetaModified() ?? $resource->getMetaPublish(),
             siteName: self::nonEmpty($this->siteName),
-            imageAlt: null !== $image && $this->imageAltFromTitle ? $title : null,
+            robots: $defaults->robots(),
+            imageAlt: null === $image
+                ? null
+                : self::nonEmpty($defaults->imageAlt) ?? ($this->imageAltFromTitle ? $title : null),
             imageWidth: $image?->width,
             imageHeight: $image?->height,
             type: $article ? PageMetadata::ARTICLE : PageMetadata::TYPE,
             published: $article ? $resource->getMetaPublish() : null,
+            schema: $defaults->schema(),
         );
     }
 

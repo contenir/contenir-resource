@@ -8,6 +8,7 @@ use Contenir\Resource\Core\Exception\ConfigurationException;
 use Contenir\Resource\Core\Metadata\ImageSizeResolverInterface;
 use Contenir\Resource\Core\Metadata\ImageUrlResolverInterface;
 use Contenir\Resource\Core\Metadata\LocalImageSizeResolver;
+use Contenir\Resource\Core\Metadata\PageDefaultsInterface;
 use Contenir\Resource\Core\Metadata\PageMetadataBuilder;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -116,6 +117,9 @@ final class PageMetadataBuilderFactory
             self::imageSizes($container, $config),
             self::flag($config, 'image_alt_from_title'),
             $config->optionalString('description_ellipsis') ?? '',
+            $container->has(PageDefaultsInterface::class)
+                ? ServiceLocator::get($container, PageDefaultsInterface::class, PageDefaultsInterface::class)
+                : null,
         );
     }
 }
