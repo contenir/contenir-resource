@@ -57,6 +57,7 @@ final readonly class PageMetadata
         public string $type = self::TYPE,
         public ?DateTimeInterface $published = null,
         public ?string $schema = null,
+        public bool $pinned = false,
     ) {}
 
     /**
@@ -131,14 +132,15 @@ final readonly class PageMetadata
 
     /**
      * The same page at another path on its origin, such as an article's own
-     * address when it was requested through a listing's.
+     * address when it was requested through a listing's. A URL the record chose
+     * itself stays as it is, since that's the point of choosing one.
      *
      * @param string $path An absolute path, such as "/work/convoy".
      */
     public function withPath(string $path): self
     {
         return new self(
-            url: RequestOrigin::of($this->url) . $path,
+            url: $this->pinned ? $this->url : RequestOrigin::of($this->url) . $path,
             title: $this->title,
             description: $this->description,
             image: $this->image,
@@ -151,6 +153,7 @@ final readonly class PageMetadata
             type: $this->type,
             published: $this->published,
             schema: $this->schema,
+            pinned: $this->pinned,
         );
     }
 }

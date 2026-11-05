@@ -80,8 +80,10 @@ final readonly class PageMetadataBuilder
         );
         $article = $this->isArticle($resource);
 
+        $canonical = $defaults->canonicalOn($origin);
+
         return new PageMetadata(
-            url: $defaults->canonicalOn($origin) ?? $origin . (is_string($path) ? $path : '/'),
+            url: $canonical ?? $origin . (is_string($path) ? $path : '/'),
             title: $title,
             description: null === $description
                 ? null
@@ -102,6 +104,7 @@ final readonly class PageMetadataBuilder
             type: $article ? PageMetadata::ARTICLE : PageMetadata::TYPE,
             published: $article ? $resource->getMetaPublish() : null,
             schema: $defaults->schema(),
+            pinned: null !== $canonical,
         );
     }
 

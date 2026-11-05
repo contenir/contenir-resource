@@ -129,6 +129,36 @@ final class PageDefaultsTest extends TestCase
     }
 
     #[Test]
+    public function aPageWithoutItsOwnCanonicalMovesToAnotherPath(): void
+    {
+        $page = $this->builder(new PageDefaults())->build(new FixedMetadata(), 'https://s.test/a');
+
+        static::assertSame('https://s.test/b', $page->withPath('/b')->url);
+    }
+
+    #[Test]
+    public function aPinnedPageIsStillPinnedAtAnotherPath(): void
+    {
+        $page = $this->builder(new PageDefaults(canonical: 'https://elsewhere.test/first'))->build(
+            new FixedMetadata(),
+            'https://s.test/a',
+        );
+
+        static::assertTrue($page->withPath('/b')->pinned);
+    }
+
+    #[Test]
+    public function aRecordsOwnCanonicalStaysAtAnotherPath(): void
+    {
+        $page = $this->builder(new PageDefaults(canonical: 'https://elsewhere.test/first'))->build(
+            new FixedMetadata(),
+            'https://s.test/a',
+        );
+
+        static::assertSame('https://elsewhere.test/first', $page->withPath('/b')->url);
+    }
+
+    #[Test]
     public function aRecordsOwnOverridesWinOverItsGettersAndTheDefaults(): void
     {
         $page = $this->builder(new PageDefaults(

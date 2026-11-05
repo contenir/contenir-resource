@@ -6,6 +6,12 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `PageMetadata::withPath()` no longer replaces a canonical address a record chose itself. A site that pins a page to its
+  own path, as a project's `/work/{slug}` is, kept the override's host and lost its path. `PageMetadata::$pinned` says
+  whether the URL is the record's own choice.
+
 ## [2.0.0-RC6] - 2026-11-04
 
 ### Added
