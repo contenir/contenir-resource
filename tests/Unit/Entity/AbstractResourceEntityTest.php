@@ -50,15 +50,14 @@ final class AbstractResourceEntityTest extends TestCase
     }
 
     /**
-     * @return array<string, array{string|null, string|null, string|null}>
+     * @return array<string, array{string|null, string|null}>
      */
     public static function navigationLabelProvider(): array
     {
         return [
-            'short title wins'          => ['Short', 'Long', 'Short'],
-            'blank short title skipped' => [' ', 'Long', 'Long'],
-            'title only'                => [null, 'Long', 'Long'],
-            'nothing set'               => [null, null, null],
+            'the title'     => ['Long', 'Long'],
+            'a blank title' => [' ', null],
+            'nothing set'   => [null, null],
         ];
     }
 
@@ -188,10 +187,9 @@ final class AbstractResourceEntityTest extends TestCase
 
     #[Test]
     #[DataProvider('navigationLabelProvider')]
-    public function navigationLabelPrefersTheShortTitle(?string $short, ?string $title, ?string $expected): void
+    public function navigationLabelIsTheTitle(?string $title, ?string $expected): void
     {
-        $resource             = ResourceFactory::make(title: $title);
-        $resource->titleShort = $short;
+        $resource = ResourceFactory::make(title: $title);
 
         static::assertSame($expected, $resource->getNavigationLabel());
     }

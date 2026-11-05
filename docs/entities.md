@@ -23,7 +23,7 @@ Properties are camelCase; the column names are explicit. Criteria and ordering u
 | `workflow` | `workflow` | `?string` |
 | `sequence` | `sequence` | `?int` |
 | `slug` | `slug` | `?string` |
-| `title`, `titleShort`, `subtitle` | `title`, `title_short`, `subtitle` | `?string` |
+| `title`, `subtitle` | `title`, `subtitle` | `?string` |
 | `description` | `description` | `?string` |
 | `metaTitle`, `metaDescription` | `meta_title`, `meta_description` | `?string` |
 | `visible` | `visible` | `?bool` |
@@ -76,7 +76,7 @@ Then point the repository at it: `'contenir_resource' => ['resource_entity' => P
 | `getType()`, `getSlug()` | The type and slug, `''` when not set |
 | `getRouteName()` | `"<type>-<id>"`, the route name the default workflows register |
 | `getWorkflowName()` | The `workflow` column, or `page` when empty |
-| `getNavigationLabel()` | The short title, or the title |
+| `getNavigationLabel()` | The title |
 | `isActive()` | Status is `active` |
 | `isVisible()` | `visible` is true (null means hidden) |
 | `getChildren()`, `setChildren()` | The children assembled by `ResourceRepository::findPageTree()` |
