@@ -169,14 +169,6 @@ abstract class AbstractResourceEntity implements MetadataInterface
     }
 
     /**
-     * The navigation label: the title.
-     */
-    public function getNavigationLabel(): ?string
-    {
-        return self::nonEmpty($this->title);
-    }
-
-    /**
      * @return array{resourceId: int}
      *
      * @throws MissingResourceException When the resource has not been saved.

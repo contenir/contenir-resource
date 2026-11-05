@@ -76,7 +76,6 @@ Then point the repository at it: `'contenir_resource' => ['resource_entity' => P
 | `getType()`, `getSlug()` | The type and slug, `''` when not set |
 | `getRouteName()` | `"<type>-<id>"`, the route name the default workflows register |
 | `getWorkflowName()` | The `workflow` column, or `page` when empty |
-| `getNavigationLabel()` | The title |
 | `isActive()` | Status is `active` |
 | `isVisible()` | `visible` is true (null means hidden) |
 | `getChildren()`, `setChildren()` | The children assembled by `ResourceRepository::findPageTree()` |

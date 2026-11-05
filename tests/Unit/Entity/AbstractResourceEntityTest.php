@@ -50,18 +50,6 @@ final class AbstractResourceEntityTest extends TestCase
     }
 
     /**
-     * @return array<string, array{string|null, string|null}>
-     */
-    public static function navigationLabelProvider(): array
-    {
-        return [
-            'the title'     => ['Long', 'Long'],
-            'a blank title' => [' ', null],
-            'nothing set'   => [null, null],
-        ];
-    }
-
-    /**
      * @return array<string, array{ResourceStatus|null, bool}>
      */
     public static function statusProvider(): array
@@ -183,15 +171,6 @@ final class AbstractResourceEntityTest extends TestCase
         $resource->subtitle  = $subtitle;
 
         static::assertSame($expected, $resource->getMetaTitle());
-    }
-
-    #[Test]
-    #[DataProvider('navigationLabelProvider')]
-    public function navigationLabelIsTheTitle(?string $title, ?string $expected): void
-    {
-        $resource = ResourceFactory::make(title: $title);
-
-        static::assertSame($expected, $resource->getNavigationLabel());
     }
 
     #[Test]
