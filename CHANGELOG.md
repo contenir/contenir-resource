@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.0-RC7] - 2026-11-05
+
 ### Fixed
 
 - `PageMetadata::withPath()` no longer replaces a canonical address a record chose itself. A site that pins a page to its
