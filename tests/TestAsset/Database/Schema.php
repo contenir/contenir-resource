@@ -21,7 +21,7 @@ final class Schema
             )',
             'CREATE TABLE resource (
                 resource_id INTEGER PRIMARY KEY AUTOINCREMENT, parent_id INTEGER, resource_type_id TEXT,
-                workflow TEXT, sequence INTEGER, slug TEXT, title TEXT, title_short TEXT, subtitle TEXT,
+                workflow TEXT, sequence INTEGER, slug TEXT, title TEXT, subtitle TEXT,
                 description TEXT, section TEXT, meta_title TEXT, meta_description TEXT, visible INTEGER,
                 created TEXT, updated TEXT, active TEXT
             )',

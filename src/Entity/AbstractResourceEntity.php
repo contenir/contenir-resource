@@ -62,9 +62,6 @@ abstract class AbstractResourceEntity implements MetadataInterface
     #[Column]
     public ?string $title = null;
 
-    #[Column('title_short')]
-    public ?string $titleShort = null;
-
     #[Column]
     public ?string $subtitle = null;
 
@@ -169,14 +166,6 @@ abstract class AbstractResourceEntity implements MetadataInterface
             [self::nonEmpty($this->title), self::nonEmpty($this->subtitle)],
             static fn(?string $part): bool => null !== $part,
         )));
-    }
-
-    /**
-     * The navigation label: the short title, or else the title.
-     */
-    public function getNavigationLabel(): ?string
-    {
-        return self::nonEmpty($this->titleShort) ?? self::nonEmpty($this->title);
     }
 
     /**

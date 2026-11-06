@@ -39,16 +39,16 @@ final class EditorValuesTest extends TestCase
     public function convertsEachValueAsAStoredColumnWouldBe(): void
     {
         $over = $this->values()->over(ResourceFactory::make(101), [
-            'title'       => 'Spa Rituals',
-            'title_short' => 'Spa',
-            'visible'     => '0',
-            'active'      => 'pending',
-            'created'     => '2026-10-01 09:30:00',
+            'title'    => 'Spa Rituals',
+            'subtitle' => 'Spa',
+            'visible'  => '0',
+            'active'   => 'pending',
+            'created'  => '2026-10-01 09:30:00',
         ]);
 
         static::assertSame(
             ['Spa Rituals', 'Spa', false, ResourceStatus::Pending, '2026-10-01 09:30:00'],
-            [$over->title, $over->titleShort, $over->visible, $over->status, $over->created?->format('Y-m-d H:i:s')],
+            [$over->title, $over->subtitle, $over->visible, $over->status, $over->created?->format('Y-m-d H:i:s')],
         );
     }
 

@@ -6,6 +6,18 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.0-RC8] - 2026-11-06
+
+### Removed
+
+- Breaking: `AbstractResourceEntity::$titleShort` and the `title_short` column it mapped. A database that still has the
+  column keeps working, as it is no longer selected; one without it no longer fails on every resource query.
+  Before: `$entity->titleShort`, a `#[Column('title_short')]` property. After: gone; keep a navigation title in a column
+  of the site's own entity if it needs one.
+- Breaking: `AbstractResourceEntity::getNavigationLabel()`. It returned the short title or else the title, and the
+  Navigation packages build their labels from the menu item. Before: `$entity->getNavigationLabel()`. After: read
+  `$entity->title`, and fall back as the caller needs when it is empty.
+
 ## [2.0.0-RC7] - 2026-11-05
 
 ### Fixed
