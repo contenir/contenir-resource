@@ -157,6 +157,18 @@ final class ResourceRepositoryTest extends TestCase
     }
 
     #[Test]
+    public function readsATableThatNoLongerHasTheMetaColumns(): void
+    {
+        $this->pdo->exec('ALTER TABLE resource DROP COLUMN meta_title');
+        $this->pdo->exec('ALTER TABLE resource DROP COLUMN meta_description');
+        $this->insertResource(['resource_id' => 6, 'title' => 'Title', 'description' => 'Desc']);
+
+        $resource = (new ResourceRepository($this->em))->find(6);
+
+        static::assertSame(['Title', 'Desc'], [$resource?->getMetaTitle(), $resource?->getMetaDescription()]);
+    }
+
+    #[Test]
     public function reloadingTheTreeReplacesChildrenOfSharedInstances(): void
     {
         $this->insertResource(['resource_id' => 1, 'title' => 'Root']);
