@@ -19,33 +19,30 @@ use PHPUnit\Framework\TestCase;
 final class AbstractResourceEntityTest extends TestCase
 {
     /**
-     * @return array<string, array{string|null, string|null, string|null}>
+     * @return array<string, array{string|null, string|null}>
      */
     public static function metaDescriptionProvider(): array
     {
         return [
-            'meta description wins'      => ['Meta', 'Body', 'Meta'],
-            'blank meta falls back'      => ["\n", 'Body', 'Body'],
-            'description only'           => [null, 'Body', 'Body'],
-            'blank description is unset' => [null, ' ', null],
-            'nothing set'                => [null, null, null],
+            'description'                => ['Body', 'Body'],
+            'blank description is unset' => [' ', null],
+            'nothing set'                => [null, null],
         ];
     }
 
     /**
-     * @return array<string, array{string|null, string|null, string|null, string|null}>
+     * @return array<string, array{string|null, string|null, string|null}>
      */
     public static function metaTitleProvider(): array
     {
         return [
-            'meta title wins'             => ['SEO title', 'Title', 'Sub', 'SEO title'],
-            'blank meta title falls back' => ['  ', 'Title', 'Sub', 'Title Sub'],
-            'title only'                  => [null, 'Title', null, 'Title'],
-            'subtitle only'               => [null, null, 'Sub', 'Sub'],
-            'blank title skipped'         => [null, ' ', 'Sub', 'Sub'],
-            'zero title kept'             => [null, '0', null, '0'],
-            'nothing set'                 => [null, null, null, null],
-            'only whitespace everywhere'  => [' ', ' ', ' ', null],
+            'title and subtitle'         => ['Title', 'Sub', 'Title Sub'],
+            'title only'                 => ['Title', null, 'Title'],
+            'subtitle only'              => [null, 'Sub', 'Sub'],
+            'blank title skipped'        => [' ', 'Sub', 'Sub'],
+            'zero title kept'            => ['0', null, '0'],
+            'nothing set'                => [null, null, null],
+            'only whitespace everywhere' => [' ', ' ', null],
         ];
     }
 
@@ -120,14 +117,10 @@ final class AbstractResourceEntityTest extends TestCase
 
     #[Test]
     #[DataProvider('metaDescriptionProvider')]
-    public function metaDescriptionFallsBackToDescription(
-        ?string $metaDescription,
-        ?string $description,
-        ?string $expected,
-    ): void {
-        $resource                  = ResourceFactory::make();
-        $resource->metaDescription = $metaDescription;
-        $resource->description     = $description;
+    public function metaDescriptionIsTheDescription(?string $description, ?string $expected): void
+    {
+        $resource              = ResourceFactory::make();
+        $resource->description = $description;
 
         static::assertSame($expected, $resource->getMetaDescription());
     }
@@ -160,15 +153,10 @@ final class AbstractResourceEntityTest extends TestCase
 
     #[Test]
     #[DataProvider('metaTitleProvider')]
-    public function metaTitleFallsBackToTitleAndSubtitle(
-        ?string $metaTitle,
-        ?string $title,
-        ?string $subtitle,
-        ?string $expected,
-    ): void {
-        $resource            = ResourceFactory::make(title: $title);
-        $resource->metaTitle = $metaTitle;
-        $resource->subtitle  = $subtitle;
+    public function metaTitleIsTheTitleAndSubtitle(?string $title, ?string $subtitle, ?string $expected): void
+    {
+        $resource           = ResourceFactory::make(title: $title);
+        $resource->subtitle = $subtitle;
 
         static::assertSame($expected, $resource->getMetaTitle());
     }

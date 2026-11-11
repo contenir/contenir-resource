@@ -6,6 +6,22 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.0-RC9] - 2026-11-11
+
+### Removed
+
+- Breaking: `AbstractResourceEntity::$metaTitle` and `$metaDescription`, and the same two on
+  `AbstractResourceCollectionEntity`, with the `meta_title` and `meta_description` columns they mapped. A database that
+  still has the columns keeps working, as they are no longer selected. Before: `$entity->metaTitle`, a
+  `#[Column('meta_title')]` property. After: gone. A record's own title and description for its page are the SEO
+  add-on's overrides, kept in the `seo` column, and a site that wants the columns without it keeps them on its own
+  entity. See UPGRADE.md.
+
+### Changed
+
+- Breaking: `getMetaTitle()` is the title and subtitle joined by a space, and `getMetaDescription()` is the
+  description. They were the meta title and meta description where those were set.
+
 ## [2.0.0-RC8] - 2026-11-06
 
 ### Removed

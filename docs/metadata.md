@@ -7,8 +7,8 @@ into a `PageMetadata`:
 | Field | From |
 | --- | --- |
 | `url` | The canonical URL: the request path on `base_url`, or on the request's origin |
-| `title` | `getMetaTitle()` |
-| `description` | `getMetaDescription()`, cleaned (`MetaText::clean()`) and cut at a word break to `description_length` characters |
+| `title` | `getMetaTitle()`: the title and subtitle, unless the record's SEO overrides give another |
+| `description` | `getMetaDescription()`: the description, unless the record's SEO overrides give another, cleaned (`MetaText::clean()`) and cut at a word break to `description_length` characters |
 | `image` | `getMetaImage()`, resolved by the `ImageUrlResolverInterface` |
 | `updated` | `getMetaModified()`, or else `getMetaPublish()` |
 | `siteName` | `contenir_resource.site_name`, on every page |

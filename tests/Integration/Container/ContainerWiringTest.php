@@ -35,11 +35,11 @@ final class ContainerWiringTest extends TestCase
     public function aResourceFromTheDatabaseGetsItsPageMetadata(): void
     {
         $this->insertResource([
-            'resource_id'      => 1,
-            'title'            => 'About',
-            'meta_description' => '<p>All about us</p>',
-            'created'          => '2024-01-02 03:04:05',
-            'updated'          => '2025-06-07 08:09:10',
+            'resource_id' => 1,
+            'title'       => 'About',
+            'description' => '<p>All about us</p>',
+            'created'     => '2024-01-02 03:04:05',
+            'updated'     => '2025-06-07 08:09:10',
         ]);
 
         $resource = $this->container->get(ResourceManagerInterface::class)->findActive(1);

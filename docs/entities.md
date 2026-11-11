@@ -25,13 +25,12 @@ Properties are camelCase; the column names are explicit. Criteria and ordering u
 | `slug` | `slug` | `?string` |
 | `title`, `subtitle` | `title`, `subtitle` | `?string` |
 | `description` | `description` | `?string` |
-| `metaTitle`, `metaDescription` | `meta_title`, `meta_description` | `?string` |
 | `visible` | `visible` | `?bool` |
 | `created`, `updated` | `created`, `updated` | `?DateTimeImmutable` |
 | `status` | `active` | `?ResourceStatus` |
 
 `AbstractResourceCollectionEntity`: `resourceCollectionId`, `resourceTypeId`, `sequence`, `title`, `slug`,
-`description`, `layout`, `metaTitle`, `metaDescription`, `status` (column `active`).
+`description`, `layout`, `status` (column `active`).
 
 `AbstractResourceTypeEntity`: `resourceTypeId` (string id), `slug`, `sequence`, `type`, `title`.
 
@@ -79,10 +78,15 @@ Then point the repository at it: `'contenir_resource' => ['resource_entity' => P
 | `isActive()` | Status is `active` |
 | `isVisible()` | `visible` is true (null means hidden) |
 | `getChildren()`, `setChildren()` | The children assembled by `ResourceRepository::findPageTree()` |
-| `getMetaTitle()` | The meta title, or the title and subtitle joined by a space |
-| `getMetaDescription()` | The meta description, or the description |
+| `getMetaTitle()` | The title and subtitle joined by a space |
+| `getMetaDescription()` | The description |
 | `getMetaImage()` | `null`; override it |
 | `getMetaModified()` | `updated` |
 | `getMetaPublish()` | `created` |
 
-Empty and whitespace-only strings count as "not set" throughout, so a blank meta title falls back to the title.
+Empty and whitespace-only strings count as "not set" throughout, so a blank subtitle leaves the meta title as the title.
+
+A record's own title and description for its page, where it has them, come from the SEO add-on's overrides (the
+`seo` column its `seo:advanced` field keeps), which win over these two. The `meta_title` and `meta_description`
+columns are no longer mapped: a database that still has them keeps working, and a site that wants them declares them
+on its own entity and overrides `getMetaTitle()` and `getMetaDescription()`.

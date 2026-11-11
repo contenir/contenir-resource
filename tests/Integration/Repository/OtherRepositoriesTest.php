@@ -49,8 +49,6 @@ final class OtherRepositoriesTest extends TestCase
                 'teas',
                 'Leaf',
                 'grid',
-                'Meta',
-                'Meta desc',
                 ResourceStatus::Active,
             ],
             [
@@ -62,8 +60,6 @@ final class OtherRepositoriesTest extends TestCase
                 $collection?->slug,
                 $collection?->description,
                 $collection?->layout,
-                $collection?->metaTitle,
-                $collection?->metaDescription,
                 $collection?->status,
             ],
         );

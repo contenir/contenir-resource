@@ -40,12 +40,6 @@ abstract class AbstractResourceCollectionEntity
     #[Column]
     public ?string $layout = null;
 
-    #[Column('meta_title')]
-    public ?string $metaTitle = null;
-
-    #[Column('meta_description')]
-    public ?string $metaDescription = null;
-
     #[Column('active')]
     public ?ResourceStatus $status = null;
 

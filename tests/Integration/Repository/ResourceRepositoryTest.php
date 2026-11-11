@@ -71,6 +71,23 @@ final class ResourceRepositoryTest extends TestCase
     }
 
     #[Test]
+    public function ignoresTheMetaColumnsADatabaseStillHas(): void
+    {
+        $this->insertResource([
+            'resource_id'      => 5,
+            'title'            => 'Title',
+            'subtitle'         => 'Sub',
+            'description'      => 'Desc',
+            'meta_title'       => 'Old meta title',
+            'meta_description' => 'Old meta description',
+        ]);
+
+        $resource = (new ResourceRepository($this->em))->find(5);
+
+        static::assertSame(['Title Sub', 'Desc'], [$resource?->getMetaTitle(), $resource?->getMetaDescription()]);
+    }
+
+    #[Test]
     public function loadsTheConfiguredEntityClass(): void
     {
         $this->insertResource(['resource_id' => 1, 'section' => '{"a":1}']);
@@ -114,8 +131,6 @@ final class ResourceRepositoryTest extends TestCase
                 'Item',
                 'Sub',
                 'Desc',
-                'Meta',
-                'Meta desc',
                 false,
                 new DateTimeImmutable('2020-01-02 03:04:05'),
                 new DateTimeImmutable('2021-01-02 03:04:05'),
@@ -132,8 +147,6 @@ final class ResourceRepositoryTest extends TestCase
                 $resource?->title,
                 $resource?->subtitle,
                 $resource?->description,
-                $resource?->metaTitle,
-                $resource?->metaDescription,
                 $resource?->visible,
                 $resource?->created,
                 $resource?->updated,

@@ -49,8 +49,8 @@ the `1.x` branch and the `v1.*` tags, and is frozen.
 | `$entity->children` (relation) | `getChildren()`, filled by `findPageTree()`; declare your own relation if you need it elsewhere |
 | `getRouteId($path = '')` | `getRouteName()`; Mezzio has no child routes, so there is no `$path` |
 | `getRoutePath()` | The workflow builds the path from `getSlug()` |
-| `getMetaTitle()` | Same; blank strings now count as not set |
-| `getMetaDescription()` | Same |
+| `getMetaTitle()` | The title and subtitle; blank strings count as not set. The `meta_title` column is no longer read (2.0.0-RC9) |
+| `getMetaDescription()` | The description. The `meta_description` column is no longer read (2.0.0-RC9) |
 | `getMetaImage()` (`$this->image[0]->path`) | Returns `null`; override it with your image relation |
 | `getMetaModified()` | Same (`updated`), already a `DateTimeImmutable` |
 | `getMetaPublish()` | Returns `created`. 1.x returned `updated` by mistake |
@@ -92,3 +92,21 @@ conversion no longer applies.
 - Meta descriptions have all whitespace collapsed; one without word breaks is cut mid-word instead of being empty.
 - Summaries are cut by characters, not bytes.
 - External links without a scheme get `https://` (1.x: `http://`); `javascript:` and other schemes are rejected.
+
+## From 2.0.0-RC8 to RC9: the meta columns
+
+`AbstractResourceEntity` and `AbstractResourceCollectionEntity` no longer map `meta_title` and `meta_description`, so
+`$entity->metaTitle` and `$entity->metaDescription` are gone and `getMetaTitle()` and `getMetaDescription()` give the
+title and subtitle, and the description. A record's own title and description for its page belong in the SEO add-on's
+`seo` column, which its `seo:advanced` field edits and which wins over both.
+
+A database that still has the two columns keeps working, as they are no longer selected. To move a site over:
+
+1. Copy each record's meta title and description into its `seo` JSON as `title` and `description`, where the `seo`
+   value lacks them, for every section that has the `seo:advanced` field.
+2. Take the two fields out of those sections' forms in admin.xml.
+3. Drop the columns when nothing reads them: `ALTER TABLE resource DROP COLUMN meta_title, DROP COLUMN
+   meta_description`, and the same on `resource_collection`.
+
+A site that has no SEO add-on and wants the columns keeps them on its own entity, as a property mapped with
+`#[Column('meta_title')]`, and overrides `getMetaTitle()` and `getMetaDescription()` to read them.

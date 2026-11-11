@@ -68,12 +68,6 @@ abstract class AbstractResourceEntity implements MetadataInterface
     #[Column]
     public ?string $description = null;
 
-    #[Column('meta_title')]
-    public ?string $metaTitle = null;
-
-    #[Column('meta_description')]
-    public ?string $metaDescription = null;
-
     #[Column]
     public ?bool $visible = null;
 
@@ -118,12 +112,12 @@ abstract class AbstractResourceEntity implements MetadataInterface
     }
 
     /**
-     * The meta description, or else the description.
+     * The description. A record's own description for its page comes from the SEO overrides, which win over this.
      */
     #[Override]
     public function getMetaDescription(): ?string
     {
-        return self::nonEmpty($this->metaDescription) ?? self::nonEmpty($this->description);
+        return self::nonEmpty($this->description);
     }
 
     /**
@@ -152,16 +146,12 @@ abstract class AbstractResourceEntity implements MetadataInterface
     }
 
     /**
-     * The meta title, or else the title and subtitle joined by a space.
+     * The title and subtitle joined by a space. A record's own title for its page comes from the SEO overrides,
+     * which win over this.
      */
     #[Override]
     public function getMetaTitle(): ?string
     {
-        $metaTitle = self::nonEmpty($this->metaTitle);
-        if (null !== $metaTitle) {
-            return $metaTitle;
-        }
-
         return self::nonEmpty(implode(' ', array_filter(
             [self::nonEmpty($this->title), self::nonEmpty($this->subtitle)],
             static fn(?string $part): bool => null !== $part,
