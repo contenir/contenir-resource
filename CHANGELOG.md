@@ -6,6 +6,19 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.0-RC9] - 2026-11-16
+
+### Changed
+
+- Breaking: `PageMetadata::getMetaTags()` writes `twitter:card` only when the page has an image
+  (`summary_large_image`). A page without one wrote `summary`, which a site whose head falls back on a default share
+  image then wrote beside that image's own `summary_large_image`, so the page held two cards. Which card a page without
+  an image has depends on the fallback the page does not know, so the head that supplies it writes the card
+  (`contenir-seo` 0.9.1 does). Before: `summary` on a page with no image. After: no card from the page; with no
+  `contenir-seo` head the page has none, and a crawler takes its default.
+- `AbstractResourceEntity::getMetaModified()` returns `created` while a resource has never been updated, so the sitemap's
+  `lastmod` and `og:updated_time` have a date for a record that has not been edited since it was added. Before: `null`.
+
 ## [2.0.0-RC8] - 2026-11-06
 
 ### Removed

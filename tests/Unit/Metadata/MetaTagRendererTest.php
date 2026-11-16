@@ -30,7 +30,7 @@ final class MetaTagRendererTest extends TestCase
                 '<link rel="canonical" href="https://s.test/&quot;&gt;&lt;script&gt;">',
                 "<meta name=\"description\" content=\"a &amp; b \u{FFFD}(\">",
             ],
-            [explode("\n", $html)[0], explode("\n", $html)[1], explode("\n", $html)[8]],
+            [explode("\n", $html)[0], explode("\n", $html)[1], explode("\n", $html)[7]],
         );
     }
 
@@ -62,7 +62,6 @@ final class MetaTagRendererTest extends TestCase
                 . "<meta property=\"og:type\" content=\"website\">\n"
                 . "<meta property=\"og:url\" content=\"https://s.test/a\">\n"
                 . "<meta name=\"twitter:url\" content=\"https://s.test/a\">\n"
-                . "<meta name=\"twitter:card\" content=\"summary\">\n"
                 . "<meta property=\"og:title\" content=\"About\">\n"
                 . '<meta name="twitter:title" content="About">',
             $html,

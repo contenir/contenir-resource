@@ -54,7 +54,7 @@ $renderer->renderTags($metadata); // the same without <title>
 ```
 
 Output it unescaped in `<head>` (for example `{{ meta|raw }}` in Twig). Open Graph tags use `property`, and Twitter
-tags use `name`. `twitter:card` is `summary_large_image` when there is an image, and `summary` otherwise. The image's
+tags use `name`. `twitter:card` is `summary_large_image` when there is an image, and is left out otherwise: a head that supplies a fallback image (`contenir-seo`) writes the card for it. The image's
 width and height are written only when both are known. An article's `og:type` is `article`, and it adds
 `article:published_time` and, when the page changed after it was published, `article:modified_time`. The tags, in order, with every value set:
 
