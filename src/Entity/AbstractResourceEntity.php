@@ -136,10 +136,14 @@ abstract class AbstractResourceEntity implements MetadataInterface
         return null;
     }
 
+    /**
+     * When the resource last changed, or when it was created while it never has been, so a record
+     * that has not been edited since it was added still has a date.
+     */
     #[Override]
     public function getMetaModified(): ?DateTimeInterface
     {
-        return $this->updated;
+        return $this->updated ?? $this->created;
     }
 
     /**

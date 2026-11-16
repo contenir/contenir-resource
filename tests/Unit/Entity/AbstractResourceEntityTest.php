@@ -139,6 +139,15 @@ final class AbstractResourceEntityTest extends TestCase
     }
 
     #[Test]
+    public function metaModifiedIsTheCreatedDateWhileTheResourceHasNeverBeenUpdated(): void
+    {
+        $resource          = ResourceFactory::make();
+        $resource->created = new DateTimeImmutable('2020-01-01 00:00:00');
+
+        static::assertSame($resource->created, $resource->getMetaModified());
+    }
+
+    #[Test]
     public function metaModifiedIsTheUpdatedDate(): void
     {
         $resource          = ResourceFactory::make();

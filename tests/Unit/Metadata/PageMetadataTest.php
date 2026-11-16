@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+use function array_filter;
 use function array_slice;
 
 #[Group('unit')]
@@ -24,17 +25,6 @@ final class PageMetadataTest extends TestCase
         return [
             'only the width'  => [1200, null],
             'only the height' => [null, 630],
-        ];
-    }
-
-    /**
-     * @return array<string, array{string|null, string}>
-     */
-    public static function twitterCardProvider(): array
-    {
-        return [
-            'with an image'    => ['https://example.com/i.jpg', 'summary_large_image'],
-            'without an image' => [null, 'summary'],
         ];
     }
 
@@ -136,18 +126,17 @@ final class PageMetadataTest extends TestCase
             imageHeight: 1,
         );
 
-        static::assertCount(4, $metadata->getMetaTags());
+        static::assertCount(3, $metadata->getMetaTags());
     }
 
     #[Test]
-    public function onlyTheTypeUrlAndCardTagsAreSetWithoutValues(): void
+    public function onlyTheTypeAndUrlTagsAreSetWithoutValues(): void
     {
         static::assertSame(
             [
                 ['attribute' => 'property', 'key' => 'og:type', 'content' => 'website'],
                 ['attribute' => 'property', 'key' => 'og:url', 'content' => 'https://example.com/a'],
                 ['attribute' => 'name', 'key' => 'twitter:url', 'content' => 'https://example.com/a'],
-                ['attribute' => 'name', 'key' => 'twitter:card', 'content' => 'summary'],
             ],
             (new PageMetadata('https://example.com/a'))->getMetaTags(),
         );
@@ -159,6 +148,27 @@ final class PageMetadataTest extends TestCase
         static::assertSame(
             [['rel' => 'canonical', 'href' => 'https://example.com/a']],
             (new PageMetadata('https://example.com/a'))->getLinks(),
+        );
+    }
+
+    #[Test]
+    public function thePageWritesALargeImageCardWhenItHasAnImage(): void
+    {
+        static::assertContains(
+            ['attribute' => 'name', 'key' => 'twitter:card', 'content' => 'summary_large_image'],
+            (new PageMetadata('https://example.com/a', image: 'https://example.com/i.jpg'))->getMetaTags(),
+        );
+    }
+
+    #[Test]
+    public function thePageWritesNoCardWithoutAnImageSoTheHeadThatSuppliesOneCanChoose(): void
+    {
+        static::assertSame(
+            [],
+            array_filter(
+                (new PageMetadata('https://example.com/a'))->getMetaTags(),
+                static fn(array $tag): bool => 'twitter:card' === $tag['key'],
+            ),
         );
     }
 
@@ -191,16 +201,6 @@ final class PageMetadataTest extends TestCase
                 ['attribute' => 'name', 'key' => 'twitter:image:alt', 'content' => 'The workshop'],
             ],
             $metadata->getMetaTags(),
-        );
-    }
-
-    #[Test]
-    #[DataProvider('twitterCardProvider')]
-    public function theTwitterCardIsALargeImageOnlyWhenThereIsAnImage(?string $image, string $card): void
-    {
-        static::assertContains(
-            ['attribute' => 'name', 'key' => 'twitter:card', 'content' => $card],
-            (new PageMetadata('https://example.com/a', image: $image))->getMetaTags(),
         );
     }
 }

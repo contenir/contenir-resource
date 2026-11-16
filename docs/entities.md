@@ -82,7 +82,7 @@ Then point the repository at it: `'contenir_resource' => ['resource_entity' => P
 | `getMetaTitle()` | The meta title, or the title and subtitle joined by a space |
 | `getMetaDescription()` | The meta description, or the description |
 | `getMetaImage()` | `null`; override it |
-| `getMetaModified()` | `updated` |
+| `getMetaModified()` | `updated`, or `created` while it has never been updated |
 | `getMetaPublish()` | `created` |
 
 Empty and whitespace-only strings count as "not set" throughout, so a blank meta title falls back to the title.

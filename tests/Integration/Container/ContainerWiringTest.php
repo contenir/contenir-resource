@@ -57,7 +57,7 @@ final class ContainerWiringTest extends TestCase
             '<meta property="og:updated_time" content="2025-06-07T08:09:10+00:00">',
             $html,
         );
-        static::assertStringContainsString('<meta name="twitter:card" content="summary">', $html);
+        static::assertStringNotContainsString('<meta name="twitter:card"', $html);
     }
 
     #[Test]

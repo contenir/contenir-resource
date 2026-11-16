@@ -74,6 +74,10 @@ final readonly class PageMetadata
      * are left out. Open Graph tags use the property attribute and Twitter
      * tags the name attribute.
      *
+     * A page with no image of its own writes no twitter:card. Which card it
+     * has depends on the image the site falls back on, which the page does
+     * not know, so the head that supplies the fallback writes the card.
+     *
      * @return list<MetaTag>
      */
     public function getMetaTags(): array
@@ -82,12 +86,11 @@ final readonly class PageMetadata
             ['attribute' => 'property', 'key' => 'og:type', 'content' => $this->type],
             ['attribute' => 'property', 'key' => 'og:url', 'content' => $this->url],
             ['attribute' => 'name', 'key' => 'twitter:url', 'content' => $this->url],
-            [
-                'attribute' => 'name',
-                'key'       => 'twitter:card',
-                'content'   => null === $this->image ? 'summary' : 'summary_large_image',
-            ],
         ];
+
+        if (null !== $this->image) {
+            $tags[] = ['attribute' => 'name', 'key' => 'twitter:card', 'content' => 'summary_large_image'];
+        }
 
         if (null !== $this->siteName) {
             $tags[] = ['attribute' => 'property', 'key' => 'og:site_name', 'content' => $this->siteName];
