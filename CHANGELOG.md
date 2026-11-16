@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.0-RC9] - 2026-11-16
+
 ### Changed
 
 - Breaking: `PageMetadata::getMetaTags()` writes `twitter:card` only when the page has an image
