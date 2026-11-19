@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.0-RC10] - 2026-11-20
+
+### Added
+
+- `PageMetadata::$author`, who wrote the page, by name, and `withAuthor()` to give a page one; `withPath()` keeps it.
+  It writes no tag of its own: `contenir-seo` writes it into the page's JSON-LD as the article's author. The builder
+  leaves it unset.
+
 ## [2.0.0-RC9] - 2026-11-16
 
 ### Changed
