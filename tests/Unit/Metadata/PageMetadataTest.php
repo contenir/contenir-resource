@@ -36,6 +36,23 @@ final class PageMetadataTest extends TestCase
         ];
     }
 
+    /**
+     * @return array<string, array{?string}>
+     */
+    public static function notWebAddresses(): array
+    {
+        return [
+            'none'        => [null],
+            'blank'       => ['  '],
+            'no scheme'   => ['joroca.com'],
+            'a path'      => ['/about'],
+            'no host'     => ['https://'],
+            'one slash'   => ['https:/joroca.com'],
+            'javascript'  => ['javascript:alert(1)'],
+            'another one' => ['ftp://joroca.com'],
+        ];
+    }
+
     #[DataProvider('halfKnownSizeProvider')]
     #[Test]
     public function aHalfKnownSizeIsLeftOut(?int $width, ?int $height): void
@@ -61,7 +78,13 @@ final class PageMetadataTest extends TestCase
     {
         static::assertSame(
             (new PageMetadata('https://example.com/a', title: 'A'))->getMetaTags(),
-            (new PageMetadata('https://example.com/a', title: 'A', author: 'Jo Roca'))->getMetaTags(),
+            (new PageMetadata(
+                'https://example.com/a',
+                title: 'A',
+                author: 'Jo Roca',
+                authorUrl: 'https://joroca.com',
+                authorProfiles: ['https://www.instagram.com/joroca'],
+            ))->getMetaTags(),
         );
     }
 
@@ -83,6 +106,8 @@ final class PageMetadataTest extends TestCase
             type: PageMetadata::ARTICLE,
             published: $published,
             author: 'Jo Roca',
+            authorUrl: 'https://joroca.com',
+            authorProfiles: ['https://www.instagram.com/joroca'],
         );
 
         static::assertEquals(
@@ -100,6 +125,8 @@ final class PageMetadataTest extends TestCase
                 type: PageMetadata::ARTICLE,
                 published: $published,
                 author: 'Jo Roca',
+                authorUrl: 'https://joroca.com',
+                authorProfiles: ['https://www.instagram.com/joroca'],
             ),
             $metadata->withPath('/work/convoy'),
         );
@@ -233,6 +260,18 @@ final class PageMetadataTest extends TestCase
     }
 
     #[Test]
+    public function withABlankAuthorHasNoneOfTheirLinks(): void
+    {
+        $metadata = (new PageMetadata('https://example.com/a'))->withAuthor(
+            ' ',
+            'https://joroca.com',
+            ['https://www.instagram.com/joroca'],
+        );
+
+        static::assertSame([null, []], [$metadata->authorUrl, $metadata->authorProfiles]);
+    }
+
+    #[Test]
     public function withAuthorKeepsEverythingElse(): void
     {
         $published = new DateTimeImmutable('2024-01-02 03:04:05+10:00');
@@ -273,5 +312,45 @@ final class PageMetadataTest extends TestCase
             ),
             $metadata->withAuthor(' Jo Roca '),
         );
+    }
+
+    #[Test]
+    public function withAuthorKeepsTheirOwnPageAndProfiles(): void
+    {
+        $metadata = (new PageMetadata('https://example.com/a'))->withAuthor(
+            'Jo Roca',
+            ' https://joroca.com ',
+            ['https://www.instagram.com/joroca', 'HTTP://twitter.com/joroca'],
+        );
+
+        static::assertSame(
+            ['https://joroca.com', ['https://www.instagram.com/joroca', 'HTTP://twitter.com/joroca']],
+            [$metadata->authorUrl, $metadata->authorProfiles],
+        );
+    }
+
+    #[Test]
+    #[DataProvider('notWebAddresses')]
+    public function withAuthorLeavesOutWhatIsNoWebAddress(?string $address): void
+    {
+        $metadata = (new PageMetadata('https://example.com/a'))->withAuthor('Jo Roca', $address, [$address]);
+
+        static::assertSame([null, []], [$metadata->authorUrl, $metadata->authorProfiles]);
+    }
+
+    #[Test]
+    public function withAuthorListsEachProfileOnceAndNotTheirOwnPage(): void
+    {
+        $metadata = (new PageMetadata('https://example.com/a'))->withAuthor(
+            'Jo Roca',
+            'https://joroca.com',
+            [
+                'https://joroca.com',
+                'https://www.instagram.com/joroca',
+                'https://www.instagram.com/joroca',
+            ],
+        );
+
+        static::assertSame(['https://www.instagram.com/joroca'], $metadata->authorProfiles);
     }
 }

@@ -43,6 +43,8 @@ final readonly class PageMetadata
      * @param ?DateTimeInterface $published When an article was first published, for article:published_time.
      * @param ?string $schema      The page's main schema.org type, such as "CreativeWork", for the site's JSON-LD.
      * @param ?string $author      Who wrote the page, by name, for its JSON-LD; it writes no tag of its own.
+     * @param ?string $authorUrl   The author's own page, such as their website, for their JSON-LD url.
+     * @param list<string> $authorProfiles The author's other profiles, such as Instagram, for their JSON-LD sameAs.
      *
      * @mago-expect lint:excessive-parameter-list Metadata is built with named arguments; all but the URL are optional.
      */
@@ -62,6 +64,8 @@ final readonly class PageMetadata
         public ?string $schema = null,
         public bool $pinned = false,
         public ?string $author = null,
+        public ?string $authorUrl = null,
+        public array $authorProfiles = [],
     ) {}
 
     /**
@@ -138,12 +142,17 @@ final readonly class PageMetadata
     }
 
     /**
-     * The same page written by someone, by name, such as the person an essay or interview is by. A blank name
-     * leaves it with no author.
+     * The same page written by someone, by name, such as the person an essay or interview is by, with their own page
+     * and their other profiles. A blank name leaves it with no author, and so none of their links. Only absolute
+     * http(s) addresses are kept, each once, and a profile that is their own page is left out.
+     *
+     * @param iterable<?string> $profiles
      */
-    public function withAuthor(?string $author): self
+    public function withAuthor(?string $author, ?string $url = null, iterable $profiles = []): self
     {
         $author = trim($author ?? '');
+        $named  = '' !== $author;
+        $url    = $named ? AuthorLinks::page($url) : null;
 
         return new self(
             url: $this->url,
@@ -160,7 +169,9 @@ final readonly class PageMetadata
             published: $this->published,
             schema: $this->schema,
             pinned: $this->pinned,
-            author: '' === $author ? null : $author,
+            author: $named ? $author : null,
+            authorUrl: $url,
+            authorProfiles: $named ? AuthorLinks::profiles($profiles, $url) : [],
         );
     }
 
@@ -189,6 +200,8 @@ final readonly class PageMetadata
             schema: $this->schema,
             pinned: $this->pinned,
             author: $this->author,
+            authorUrl: $this->authorUrl,
+            authorProfiles: $this->authorProfiles,
         );
     }
 }

@@ -21,7 +21,9 @@ A description cut short ends with `description_ellipsis`, when set, in place of 
 
 `PageMetadata` also takes `robots`, which a site sets itself (for example from contenir/seo's settings), and `author`,
 who wrote the page, by name, which a site gives it with `withAuthor()` (for example a contributor's name on their essay)
-and contenir-seo writes into the page's JSON-LD. The builder leaves both unset, and `author` writes no tag of its own.
+and contenir-seo writes into the page's JSON-LD. `withAuthor()` also takes the author's own page (`authorUrl`, such as
+their website) and their other profiles (`authorProfiles`, such as Instagram), keeping only absolute http(s) addresses,
+each once. The builder leaves both unset, and `author` writes no tag of its own.
 
 ### Measuring the share image
 
