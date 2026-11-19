@@ -6,6 +6,15 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.0-RC11] - 2026-11-20
+
+### Added
+
+- `PageMetadata::$authorUrl` and `$authorProfiles`: the author's own page, such as their website, and their other
+  profiles, such as Instagram, which `contenir-seo` writes as their `url` and `sameAs`. `withAuthor()` takes them after
+  the name, keeping only absolute http(s) addresses, each once, and no profile that is their own page; an author with
+  no name has neither. `withPath()` keeps them, and they write no tag of their own.
+
 ## [2.0.0-RC10] - 2026-11-20
 
 ### Added
