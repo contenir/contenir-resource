@@ -19,8 +19,9 @@ into a `PageMetadata`:
 
 A description cut short ends with `description_ellipsis`, when set, in place of any punctuation it would have ended on.
 
-`PageMetadata` also takes `robots`, which a site sets itself (for example from contenir/seo's settings); the builder
-leaves it unset.
+`PageMetadata` also takes `robots`, which a site sets itself (for example from contenir/seo's settings), and `author`,
+who wrote the page, by name, which a site gives it with `withAuthor()` (for example a contributor's name on their essay)
+and contenir-seo writes into the page's JSON-LD. The builder leaves both unset, and `author` writes no tag of its own.
 
 ### Measuring the share image
 

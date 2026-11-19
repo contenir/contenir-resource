@@ -6,6 +6,8 @@ namespace Contenir\Resource\Core\Metadata;
 
 use DateTimeInterface;
 
+use function trim;
+
 use const DATE_ATOM;
 
 /**
@@ -40,6 +42,7 @@ final readonly class PageMetadata
      * @param string  $type        The og:type: TYPE, ARTICLE or another Open Graph type.
      * @param ?DateTimeInterface $published When an article was first published, for article:published_time.
      * @param ?string $schema      The page's main schema.org type, such as "CreativeWork", for the site's JSON-LD.
+     * @param ?string $author      Who wrote the page, by name, for its JSON-LD; it writes no tag of its own.
      *
      * @mago-expect lint:excessive-parameter-list Metadata is built with named arguments; all but the URL are optional.
      */
@@ -58,6 +61,7 @@ final readonly class PageMetadata
         public ?DateTimeInterface $published = null,
         public ?string $schema = null,
         public bool $pinned = false,
+        public ?string $author = null,
     ) {}
 
     /**
@@ -134,6 +138,33 @@ final readonly class PageMetadata
     }
 
     /**
+     * The same page written by someone, by name, such as the person an essay or interview is by. A blank name
+     * leaves it with no author.
+     */
+    public function withAuthor(?string $author): self
+    {
+        $author = trim($author ?? '');
+
+        return new self(
+            url: $this->url,
+            title: $this->title,
+            description: $this->description,
+            image: $this->image,
+            updated: $this->updated,
+            siteName: $this->siteName,
+            robots: $this->robots,
+            imageAlt: $this->imageAlt,
+            imageWidth: $this->imageWidth,
+            imageHeight: $this->imageHeight,
+            type: $this->type,
+            published: $this->published,
+            schema: $this->schema,
+            pinned: $this->pinned,
+            author: '' === $author ? null : $author,
+        );
+    }
+
+    /**
      * The same page at another path on its origin, such as an article's own
      * address when it was requested through a listing's. A URL the record chose
      * itself stays as it is, since that's the point of choosing one.
@@ -157,6 +188,7 @@ final readonly class PageMetadata
             published: $this->published,
             schema: $this->schema,
             pinned: $this->pinned,
+            author: $this->author,
         );
     }
 }

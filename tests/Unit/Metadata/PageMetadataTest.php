@@ -18,6 +18,14 @@ use function array_slice;
 final class PageMetadataTest extends TestCase
 {
     /**
+     * @return array<string, array{?string}>
+     */
+    public static function blankAuthors(): array
+    {
+        return ['null' => [null], 'empty' => [''], 'spaces' => ['  ']];
+    }
+
+    /**
      * @return array<string, array{int|null, int|null}>
      */
     public static function halfKnownSizeProvider(): array
@@ -49,6 +57,15 @@ final class PageMetadataTest extends TestCase
     }
 
     #[Test]
+    public function anAuthorWritesNoTagOfItsOwn(): void
+    {
+        static::assertSame(
+            (new PageMetadata('https://example.com/a', title: 'A'))->getMetaTags(),
+            (new PageMetadata('https://example.com/a', title: 'A', author: 'Jo Roca'))->getMetaTags(),
+        );
+    }
+
+    #[Test]
     public function aPageAtAnotherPathKeepsItsOriginAndEveryOtherValue(): void
     {
         $published = new DateTimeImmutable('2024-01-30');
@@ -65,6 +82,7 @@ final class PageMetadataTest extends TestCase
             imageHeight: 630,
             type: PageMetadata::ARTICLE,
             published: $published,
+            author: 'Jo Roca',
         );
 
         static::assertEquals(
@@ -81,6 +99,7 @@ final class PageMetadataTest extends TestCase
                 imageHeight: 630,
                 type: PageMetadata::ARTICLE,
                 published: $published,
+                author: 'Jo Roca',
             ),
             $metadata->withPath('/work/convoy'),
         );
@@ -201,6 +220,58 @@ final class PageMetadataTest extends TestCase
                 ['attribute' => 'name', 'key' => 'twitter:image:alt', 'content' => 'The workshop'],
             ],
             $metadata->getMetaTags(),
+        );
+    }
+
+    #[Test]
+    #[DataProvider('blankAuthors')]
+    public function withABlankAuthorHasNone(?string $author): void
+    {
+        $metadata = new PageMetadata('https://example.com/a', author: 'Jo Roca');
+
+        static::assertNull($metadata->withAuthor($author)->author);
+    }
+
+    #[Test]
+    public function withAuthorKeepsEverythingElse(): void
+    {
+        $published = new DateTimeImmutable('2024-01-02 03:04:05+10:00');
+        $metadata  = new PageMetadata(
+            'https://example.com/words/power/jo-roca',
+            title: 'Jo Roca',
+            description: 'On power.',
+            image: 'https://example.com/i.jpg',
+            updated: $published,
+            siteName: 'Example',
+            robots: 'noindex',
+            imageAlt: 'Jo Roca',
+            imageWidth: 1200,
+            imageHeight: 630,
+            type: PageMetadata::ARTICLE,
+            published: $published,
+            schema: 'Article',
+            pinned: true,
+        );
+
+        static::assertEquals(
+            new PageMetadata(
+                'https://example.com/words/power/jo-roca',
+                title: 'Jo Roca',
+                description: 'On power.',
+                image: 'https://example.com/i.jpg',
+                updated: $published,
+                siteName: 'Example',
+                robots: 'noindex',
+                imageAlt: 'Jo Roca',
+                imageWidth: 1200,
+                imageHeight: 630,
+                type: PageMetadata::ARTICLE,
+                published: $published,
+                schema: 'Article',
+                pinned: true,
+                author: 'Jo Roca',
+            ),
+            $metadata->withAuthor(' Jo Roca '),
         );
     }
 }
