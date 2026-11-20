@@ -63,8 +63,17 @@ final readonly class PageDefaults
         return self::text($this->overrides->description) ?? self::text($own) ?? self::text($this->description);
     }
 
+    /**
+     * The share image: the record's own override, else the resource's, else
+     * this default's; none when the record asks for the site's share image
+     * (PageOverrides::SITE_IMAGE), so the head writes the site's instead.
+     */
     public function image(?string $own): ?string
     {
+        if ($this->overrides->sharesSiteImage()) {
+            return null;
+        }
+
         return self::text($this->overrides->image) ?? self::text($own) ?? self::text($this->image);
     }
 

@@ -6,6 +6,12 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.0-RC12] - 2026-11-20
+
+### Added
+
+- `PageOverrides::SITE_IMAGE` (`@site`): a record's image override that takes the page's own image away, so a site whose head falls back on a default share image (`contenir-seo`) shares that instead, even though the resource has an image. `PageDefaults::image()` gives none for it, and the page has no image alt either. The SEO add-on writes it when an editor chooses "The site's share image".
+
 ## [2.0.0-RC11] - 2026-11-20
 
 ### Added
