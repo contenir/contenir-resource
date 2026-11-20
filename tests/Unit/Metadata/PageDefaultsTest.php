@@ -46,6 +46,14 @@ final class PageDefaultsTest extends TestCase
         ];
     }
 
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function siteImageProvider(): array
+    {
+        return ['as it is' => ['@site'], 'with spaces' => [' @site ']];
+    }
+
     #[Test]
     public function aBlankGetterValueLeavesRoomForTheDefault(): void
     {
@@ -101,6 +109,20 @@ final class PageDefaultsTest extends TestCase
         ), 'https://s.test/house');
 
         static::assertSame('The house from the garden', $page->imageAlt);
+    }
+
+    #[Test]
+    public function anImageOverrideWinsOverTheRecordsOwnImage(): void
+    {
+        $page = $this->builder(new PageDefaults(overrides: new PageOverrides(image: '/chosen.jpg')))->build(
+            new FixedMetadata(
+                title: 'House',
+                image: '/own.jpg',
+            ),
+            'https://s.test/house',
+        );
+
+        static::assertSame('https://s.test/chosen.jpg', $page->image);
     }
 
     #[Test]
@@ -177,6 +199,22 @@ final class PageDefaultsTest extends TestCase
             ['Share title', 'Share description.', 'https://s.test/share.jpg', 'Share alt'],
             [$page->title, $page->description, $page->image, $page->imageAlt],
         );
+    }
+
+    #[Test]
+    #[DataProvider('siteImageProvider')]
+    public function aRecordThatAsksForTheSitesShareImageHasNoneOfItsOwn(string $override): void
+    {
+        $page = $this->builder(new PageDefaults(
+            image: '/default.jpg',
+            imageAlt: 'Mapped alt',
+            overrides: new PageOverrides(image: $override),
+        ))->build(new FixedMetadata(
+            title: 'House',
+            image: '/own.jpg',
+        ), 'https://s.test/house');
+
+        static::assertSame([null, null], [$page->image, $page->imageAlt]);
     }
 
     #[Test]
